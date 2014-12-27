@@ -1,0 +1,76 @@
+<html>
+  <head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script type='text/javascript' src="{{ url_for('static', filename='js/jquery-1.11.1.min.js') }}"></script>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <script type='text/javascript' src="{{ url_for('static', filename='js/bootstrap.min.js') }} "></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/arcadia_admin.css') }}">
+
+    {% if title %}
+    <title>{{ title }} - Arcadia Admin</title>
+    {% else %}
+    <title>Arcadia Admin</title>
+    {% endif %}
+
+
+  </head>
+  <body>
+
+
+ <!-- Static navbar -->
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/" title="Arcadia Admin" style="text-shadow: 1px 1px black;"><b> Arcadia Admin </b> <img style="max-width:100px; margin-top: -34px; margin-left: -35px;" src="{{ url_for('static', filename='img/logo.png') }}"></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          {% block nav_left %}{% endblock %}
+          <ul class="nav navbar-nav navbar-right">
+            <li></li>
+            <li><a href="/settings">Settings</a></li>
+          </ul>
+
+                  <div class="col-sm-3 col-md-3 pull-right">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" style="height:30px; margin-top: 3px; font-size:12pt; border: 1px solid black;" placeholder="Search" name="q">
+                    <div class="input-group-btn">
+                        <a href="#" class="btn btn-default" style="height:30px; margin-top: 3px; margin-left: 0px; text-shadow: 1px 1px black;" ><i class="glyphicon glyphicon-search" style="margin-top: -3px;"></i></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+ <div class="container-fluid">
+{% block breadcrumb %}{% endblock %}
+
+    {% block content %}{% endblock %}
+</div>
+
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }} </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+
+
+  {% block scripts %}{% endblock %}
+  </body>
+</html>

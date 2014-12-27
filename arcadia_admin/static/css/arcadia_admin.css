@@ -1,0 +1,12 @@
+/**
+ * Progress bars with centered text
+ */
+.progress {
+    position: relative;
+}
+.progress span {
+    position: absolute;
+    display: block;
+    width: 100%;
+    text-shadow: 1px 1px black;
+ }
