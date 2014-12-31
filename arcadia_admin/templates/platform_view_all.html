@@ -1,6 +1,20 @@
 <!-- extend from base layout -->
 {% extends "base.html" %}
 
+
+{% block nav_left %}
+<ul class="nav navbar-nav">
+    <li><a href="platform/new"><span class="glyphicon glyphicon-plus"></span> Add New Platform</a> </li>
+</ul>
+{% endblock %}
+
+{% block breadcrumb %}
+     <ol class="breadcrumb">
+         <li><a href="/">Home</a></li>
+         <li class="active">Platform</li>
+     </ol>
+{% endblock %}
+
 {% block content %}
     <table class="table table-striped table-hover">
         <tr><th></th>  <th>ID</th><th>NAME</th> <th>ACTIVE GAMES</th></tr>
@@ -11,7 +25,6 @@
             <td><a href="/platform/{{platform.id}}">{{platform.name}}</a></td>
             <td> {{ platform.games_active.count() }} of {{ platform.games.count() }} </td>
             </tr>
-
     {% endfor %}
     </table>
 {% endblock %}

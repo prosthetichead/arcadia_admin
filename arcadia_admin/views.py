@@ -1,42 +1,13 @@
 from flask import render_template, flash, redirect, request, Response, jsonify
 from arcadia_admin import app, db, models, theGameDB, ScanRoms
 from forms import PlatformForm
-from threading import Thread
-import glob
 import os
-import time
+from werkzeug import utils
+from uuid import uuid4
 
 
 scanner = None
 
-
-class ScanRoms(Thread):
-	file_names = []
-	total_games_count = 0
-	games_processed_count = 0
-	file_extension = 'zip'
-	platform_id = 0
-
-	def __init__(self, scan_path='/', file_extension='zip', platform_id=0):
-		Thread.__init__(self)
-
-		self.file_extension = file_extension
-		self.file_names = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob(os.path.join(scan_path, '*.*'))]
-		self.platform_id = platform_id
-
-	def run(self):
-		platform = models.Platform.query.get(self.platform_id)
-		games = platform.games
-		self.total_games_count = games.count()
-
-		for g in games:
-			self.games_processed_count += 1
-			if g.file_name in self.file_names:
-				g.active = True
-			else:
-				g.active = False
-			db.session.add(g)
-			db.session.commit()
 
 @app.before_request
 def before_request():
@@ -75,7 +46,8 @@ def platform_edit_form(platform_id):
 	if form.validate_on_submit():
 		platform.name = form.name.data
 		platform.desc = form.desc.data
-		platform.gamedb_id = form.gamedb_id.data
+		if form.gamedb_id.data != 'New Platform':
+			platform.gamedb_id = form.gamedb_id.data
 		platform.active = form.active.data
 
 		platform.alias = form.alias.data
@@ -115,6 +87,21 @@ def platform_view(platform_id):
 		return render_template("platform_view.html", title=page_title, platform=platform, games=games)
 
 
+@app.route('/platform/upload_rom_xml', methods=['POST'])
+def upload_rom_xml():
+	f = request.files['file']
+	# TODO: Check if the file is one of the allowed types/extensions (check its XML)
+	# Make the filename safe, remove unsupported chars
+	filename = str(uuid4())  # utils.secure_filename(f.filename)
+	f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+	return jsonify(result='OK', filename=filename)
+
+
+@app.route('/platform/<platform_id>/_load_rom_xml/<file_name>')
+def load_rom_xml(platform_id, file_name):
+	return jsonify(result='OK')
+
+
 @app.route('/platform/<platform_id>/_rom_scan')
 def platform_rom_scan(platform_id):
 
@@ -124,7 +111,7 @@ def platform_rom_scan(platform_id):
 	global scanner
 
 	if scanner is None:
-		scanner = ScanRoms(scan_path=rom_path, file_extension=extension, platform_id=platform_id)
+		scanner = ScanRoms.ScanRoms(scan_path=rom_path, file_extension=extension, platform_id=platform_id)
 		scanner.start()
 		return jsonify(status='running', total_games=scanner.total_games_count, games_processed=scanner.games_processed_count)
 	elif scanner.is_alive():
@@ -132,6 +119,7 @@ def platform_rom_scan(platform_id):
 	else:
 		scanner = None
 		return jsonify(status='ended')
+
 
 
 

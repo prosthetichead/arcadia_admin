@@ -28,6 +28,37 @@ function rom_scan(){
         }; 
     }); 
 }
+
+function import_rom_xml() {
+    $("#import_rom_xml-dialog").modal("show");
+}
+
+function load_rom_xml(file_name) {
+    $.getJSON("{{ platform.id }}/_load_rom_xml/" + file_name, function(data){
+
+    });
+}
+
+$(function() {
+    $('#import_rom_xml-upload-btn').click(function() {
+        console.log($('#import_rom_xml-upload-form')[0])
+        var form_data = new FormData($('#import_rom_xml-upload-form')[0]);
+        $.ajax({
+            type: 'POST',
+            url: '/platform/upload_rom_xml',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(data) {
+                if (data.result == 'OK') {
+                  load_rom_xml(data.filename);
+                };
+            },
+        });
+    });
+});
+
 </script>
 {% endblock %}
 
@@ -36,18 +67,13 @@ function rom_scan(){
     <li> <a onclick="rom_scan()" href="javascript:void(0);">Scan Roms</a></li>
     <li><a href="#">Add Rom File</a></li>
     <li><a href="{{platform.id}}/edit">Edit Platform</a> </li>
+
     <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Import From<span class="caret"></span></a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Import<span class="caret"></span></a>
         <ul class="dropdown-menu" role="menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li class="divider"></li>
-                <li class="dropdown-header">Nav header</li>
-                <li><a href="#">Separated link</a></li>
-                <li><a href="#">One more separated link</a></li>
-              </ul>
-            </li>
+                <li> <a onclick="import_rom_xml()" href="javascript:void(0);">Import Rom XML Information</a></li>
+        </ul>
+    </li>
 </ul>
 {% endblock %}
 
@@ -129,6 +155,28 @@ function rom_scan(){
                 <span id="progressBar_text"></span>
             </div>
         </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="import_rom_xml-dialog" tabindex="-1" role="dialog" aria-labelledby="import_rom_xml-label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="import_rom_xml-label">Import Rom Information from XML</h4>
+      </div>
+      <div class="modal-body">
+        <form id="import_rom_xml-upload-form" role="form" action="sendQuestions" method="post" enctype="multipart/form-data">
+            <div class="fileinput fileinput-new input-group" data-provides="fileinput">
+            <div class="form-control" data-trigger="fileinput"><i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div>
+            <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" name="file"></span>
+            <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+            </div>
+
+            <button id="import_rom_xml-upload-btn" type="button" class="btn btn-primary" data-dismiss="modal" value="Upload">Upload</button>
+        </form>
 
       </div>
     </div>
