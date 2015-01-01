@@ -6,9 +6,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <script type='text/javascript' src="{{ url_for('static', filename='js/bootstrap.min.js') }} "></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/arcadia_admin.css') }}">
-      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/jasny-bootstrap.min.css') }}">
-      <script type='text/javascript' src="{{ url_for('static', filename='js/jasny-bootstrap.min.js') }} "></script>
-
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-filestyle.min.js') }} "> </script>
 
     {% if title %}
     <title>{{ title }} - Arcadia Admin</title>
@@ -31,7 +29,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/" title="Arcadia Admin" style="text-shadow: 1px 1px black;"><b> Arcadia Admin </b> <img style="max-width:100px; margin-top: -34px; margin-left: -35px;" src="{{ url_for('static', filename='img/logo.png') }}"></a>
+          <a class="navbar-brand" href="/" title="Arcadia Admin" style="text-shadow: 1px 1px black;"><b> Arcadia Admin </b> <img style="max-width:100px; margin-top: -34px; margin-left: -38px;" src="{{ url_for('static', filename='img/logo.png') }}"></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           {% block nav_left %}{% endblock %}
@@ -73,7 +71,14 @@
     {% endwith %}
 
 
-
+<script>
+    $(document).on('change', '.btn-file :file', function() {
+    var input = $(this),
+    numFiles = input.get(0).files ? input.get(0).files.length : 1,
+    label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.trigger('fileselect', [numFiles, label]);
+    });
+</script>
   {% block scripts %}{% endblock %}
   </body>
 </html>

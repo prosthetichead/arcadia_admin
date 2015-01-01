@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, request, Response, jsonify
-from arcadia_admin import app, db, models, theGameDB, ScanRoms
+from arcadia_admin import app, db, models, theGameDB, ScanRoms, ReadRomList
 from forms import PlatformForm
 import os
 from werkzeug import utils
@@ -26,7 +26,7 @@ def page_not_found(e):
 def platform_view_all():
 	platforms = models.Platform.query.all()
 
-	return render_template("platform_view_all.html", title="Platforms", platforms=platforms)
+	return render_template("platforms.html", title="Platforms", platforms=platforms)
 
 
 @app.route('/platform/new', defaults={'platform_id': None}, methods=['GET', 'POST'])
@@ -60,7 +60,7 @@ def platform_edit_form(platform_id):
 		flash('platform name ="%s", active=%s' % (form.name.data, str(form.active.data)))
 		return redirect('/platform')
 
-	return render_template('platform_edit_form.html',
+	return render_template('platform_edit.html',
 						   title='Platform ' + str(platform.name),
 						   platform=platform,
 						   form=form)
@@ -84,7 +84,7 @@ def platform_view(platform_id):
 
 		page_title = platform.name
 
-		return render_template("platform_view.html", title=page_title, platform=platform, games=games)
+		return render_template("platform.html", title=page_title, platform=platform, games=games)
 
 
 @app.route('/platform/upload_rom_xml', methods=['POST'])
@@ -99,6 +99,9 @@ def upload_rom_xml():
 
 @app.route('/platform/<platform_id>/_load_rom_xml/<file_name>')
 def load_rom_xml(platform_id, file_name):
+	f = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+	readRomList = ReadRomList.Generic_XML_List(xml_file_path=f, platform_id=platform_id)
+	readRomList.start()
 	return jsonify(result='OK')
 
 

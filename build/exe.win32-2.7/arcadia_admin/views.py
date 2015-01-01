@@ -69,7 +69,7 @@ def index():
 def platform_view_all():
 	platforms = models.Platform.query.all()
 
-	return render_template("platform_view_all.html", title="Platforms", platforms=platforms)
+	return render_template("platforms.html", title="Platforms", platforms=platforms)
 
 
 @app.route('/platform/new', defaults={'platform_id': None}, methods=['GET', 'POST'])
@@ -102,7 +102,7 @@ def platform_edit_form(platform_id):
 		flash('platform name ="%s", active=%s' % (form.name.data, str(form.active.data)))
 		return redirect('/platform')
 
-	return render_template('platform_edit_form.html',
+	return render_template('platform_edit.html',
 						   title='Platform ' + str(platform.name),
 						   platform=platform,
 						   form=form)
@@ -126,7 +126,7 @@ def platform_view(platform_id):
 
 		page_title = platform.name
 
-		return render_template("platform_view.html", title=page_title, platform=platform, games=games)
+		return render_template("platform.html", title=page_title, platform=platform, games=games)
 
 
 @app.route('/platform/<platform_id>/_rom_scan')

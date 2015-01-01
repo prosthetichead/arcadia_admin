@@ -39,6 +39,13 @@ function load_rom_xml(file_name) {
     });
 }
 
+$(document).ready( function() {
+    $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+        console.log(numFiles);
+        console.log(label);
+    });
+});
+
 $(function() {
     $('#import_rom_xml-upload-btn').click(function() {
         console.log($('#import_rom_xml-upload-form')[0])
@@ -169,11 +176,18 @@ $(function() {
       </div>
       <div class="modal-body">
         <form id="import_rom_xml-upload-form" role="form" action="sendQuestions" method="post" enctype="multipart/form-data">
-            <div class="fileinput fileinput-new input-group" data-provides="fileinput">
-            <div class="form-control" data-trigger="fileinput"><i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div>
-            <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" name="file"></span>
-            <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+
+
+            <div class="input-group">
+                <input type="text" class="form-control" readonly>
+                <div class="input-group-btn">
+                    <span class="btn btn-primary btn-file" style="height: 40px; margin-top: -1px; margin-left: 0px; text-shadow: 1px 1px black;">
+                        Browse <input type="file" name="file">
+                    </span>
+                </div>
             </div>
+
+            <br />
 
             <button id="import_rom_xml-upload-btn" type="button" class="btn btn-primary" data-dismiss="modal" value="Upload">Upload</button>
         </form>
