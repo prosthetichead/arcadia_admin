@@ -3,7 +3,7 @@ import re
 import sys
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from arcadia_admin import theGameDB
+from arcadia_admin import OnlineDataProviders
 from jinja2 import evalcontextfilter, Markup, escape
 
 
@@ -38,7 +38,7 @@ def nl2br(eval_ctx, value):
 
 app.config.from_object('config')
 db = SQLAlchemy(app)
-theGameDB.refresh_platform_choices() ## one off load of the platforms from gamedb
+OnlineDataProviders.refresh_thegamesdb_platform_choices() ## one off load of the platforms from gamedb
 
 # initialization done, load up the  the modules
 from arcadia_admin import views, models

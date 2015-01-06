@@ -18,7 +18,7 @@ function rom_scan(){
             var percentage = (data.games_processed / data.total_games) * 100;
             $("#progressBar").css("width", percentage + "%");
             $("#progressBar_text").text(data.games_processed + " of " + data.total_games + " Roms Scaned ");
-            setTimeout("rom_scan()",10000);
+            setTimeout("rom_scan()",1000);
         } 
         else{
             $("#progressBar_text").text("Complete");
@@ -32,17 +32,9 @@ function rom_scan(){
 function import_rom_xml() {
     $("#import_rom_xml-dialog").modal("show");
 }
-
-function load_rom_xml(file_name) {
-    $.getJSON("{{ platform.id }}/_load_rom_xml/" + file_name, function(data){
-
-    });
-}
-
 $(document).ready( function() {
     $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
-        console.log(numFiles);
-        console.log(label);
+        $("#import_rom_xml-upload_text").val(label);
     });
 });
 
@@ -52,35 +44,76 @@ $(function() {
         var form_data = new FormData($('#import_rom_xml-upload-form')[0]);
         $.ajax({
             type: 'POST',
-            url: '/platform/upload_rom_xml',
+            url: '/platform/{{ platform.id }}/_load_game_list',
             data: form_data,
             contentType: false,
             cache: false,
             processData: false,
             success: function(data) {
                 if (data.result == 'OK') {
-                  load_rom_xml(data.filename);
+                  load_game_list(data.filename, data.file_type);
                 };
             },
         });
     });
 });
+function load_game_list(filename, file_type) {
+    var p = { filename:filename, file_type:file_type };
+    var params = jQuery.param( p );
+    $.getJSON("/platform/{{ platform.id }}/_load_game_list?" + params, function(data){
+        if (data.status == 'running') {
+            console.log(data.status);
+            var percentage = (data.games_processed_count / data.total_games_count) * 100;
+            $("#import_rom_xml-progressBar").css("width", percentage + "%");
+            setTimeout(function() { load_game_list(filename, file_type); }, 1000)
+        }
+        else{
+            location.reload(true);
+        };
+    });
+}
+
+$(".btn_delete_game").click(function() {
+    console.log('click');
+    var row_id = $(this).closest('tr').attr('id');
+    delete_game(row_id, {{platform.id}});
+ });
+
+function delete_game(game_id, platform_id) {
+    var p = { game_id:game_id };
+    var params = jQuery.param( p );
+    console.log("/platform/{{ platform.id }}/_delete_games?" + params);
+    $.getJSON("/platform/{{ platform.id }}/_delete_games?" + params, function(data){
+        if (data.result = 'OK') {
+            if (game_id != '__ALL') {
+               $('#' + game_id).hide();
+            }
+            else {
+                location.reload(true);
+            }
+        };
+
+    });
+}
 
 </script>
 {% endblock %}
 
 {% block nav_left %}
 <ul class="nav navbar-nav">
-    <li> <a onclick="rom_scan()" href="javascript:void(0);">Scan Roms</a></li>
-    <li><a href="#">Add Rom File</a></li>
     <li><a href="{{platform.id}}/edit">Edit Platform</a> </li>
 
     <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Import<span class="caret"></span></a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Games<span class="caret"></span></a>
         <ul class="dropdown-menu" role="menu">
-                <li> <a onclick="import_rom_xml()" href="javascript:void(0);">Import Rom XML Information</a></li>
+            <li> <a onclick="rom_scan()" href="javascript:void(0);">Scan For Games</a></li>
+
+            <li class="divider"></li>
+            <li> <a onclick="import_rom_xml()" href="javascript:void(0);">Import Game Information from XML</a></li>
+            <li> <a href="javascript:void(0);" onclick="delete_game('__ALL', '{{platform.id}}');">Delete All Games</a></li>
         </ul>
     </li>
+
 </ul>
 {% endblock %}
 
@@ -117,31 +150,42 @@ $(function() {
 
 
     <table class="table table-striped table-hover">
-        <tr><th>NAME
-            <a onclick="changeSort('name','asc')" href="javascript:void(0);"><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
-            <a onclick="changeSort('name','desc')" href="javascript:void(0);"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></a>
-        </th>
-            <th>FILE NAME
+
+        <tr>
+            <th id="game_options">OPTIONS</th>
+            <th id="game_name">NAME
+                <a onclick="changeSort('name','asc')" href="javascript:void(0);"><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
+                <a onclick="changeSort('name','desc')" href="javascript:void(0);"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></a>
+            </th>
+            <th id="game_file_name">FILE NAME
                 <a onclick="changeSort('file_name','asc')" href="javascript:void(0);"><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
                 <a onclick="changeSort('file_name','desc')" href="javascript:void(0);"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></a>
             </th>
-            <th>GENRE
-                <a onclick="changeSort('genre_id','asc')" href="javascript:void(0);"><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
-                <a onclick="changeSort('genre_id','desc')" href="javascript:void(0);"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></a>
-            </th>
-            <th>ACTIVE
+            <th id="game_genre">REGIONS</th>
+            <th id="game_active">ACTIVE
                 <a onclick="changeSort('active','asc')" href="javascript:void(0);"><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
                 <a onclick="changeSort('active','desc')" href="javascript:void(0);"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></a>
             </th>
 
         </tr>
         {% for game in games %}
-            <tr class="{% if game.active %} success {% else %} danger {% endif %} ">
+            <tr class="{% if game.active %} success {% else %} danger {% endif %} " id="{{game.id}}">
+                <td>
+                    <div class="btn-group btn-group-xs" role="group" aria-label="Game" >
+                        <button type="button" class="btn btn-warning btn_delete_game"><span class="glyphicon glyphicon-trash" ></span></button>
+                        <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-eye-open"></span></button>
+                        <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-cloud"></span></button>
+                    </div>
+                </td>
                 <td>{{game.name}}</td>
                 <td>{{game.file_name}}</td>
-                <td>{{game.genre.genre_name}}</td>
+                <td>
+                    {% for region in game.regions %}
+                        <a href="/region/{{ region.id }}">{{ region.region_abbreviation }}</a>
+                    {% endfor %}
+                </td>
                 <td class="text-center">{% if game.active %} <span class="glyphicon glyphicon-ok"></span> {% else %}   {% endif %}</td>
-                </tr>
+            </tr>
         {% endfor %}
     </table>
 
@@ -168,31 +212,35 @@ $(function() {
   </div>
 </div>
 
-<div class="modal fade" id="import_rom_xml-dialog" tabindex="-1" role="dialog" aria-labelledby="import_rom_xml-label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+<div class="modal fade" id="import_rom_xml-dialog" tabindex="-1" role="dialog" aria-labelledby="import_rom_xml-label" aria-hidden="true" >
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="import_rom_xml-label">Import Rom Information from XML</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="import_rom_xml-label">Import Game Information from XML</h4>
       </div>
       <div class="modal-body">
-        <form id="import_rom_xml-upload-form" role="form" action="sendQuestions" method="post" enctype="multipart/form-data">
-
-
+          <p>Import game information from a generic XML files and HyperSpin XML database files</p>
+        <form id="import_rom_xml-upload-form" role="form" action="sendXML" method="post" enctype="multipart/form-data">
             <div class="input-group">
-                <input type="text" class="form-control" readonly>
-                <div class="input-group-btn">
-                    <span class="btn btn-primary btn-file" style="height: 40px; margin-top: -1px; margin-left: 0px; text-shadow: 1px 1px black;">
-                        Browse <input type="file" name="file">
-                    </span>
+                    <input type="text" id="import_rom_xml-upload_text" class="form-control" readonly placeholder="Choose XML file">
+                    <div class="input-group-btn">
+                        <span class="btn btn-primary btn-file" style="height: 40px; margin-top: 0px; margin-left: 0px; text-shadow: 1px 1px black;">
+                            Browse <input type="file" name="file" accept="application/xml">
+                        </span>
+                    </div>
+            </div>
+        </form>
+            <div class="progress progress-striped active">
+                <div id="import_rom_xml-progressBar" class="progress-bar" style="width: 0%">
+                    <span id="import_rom_xml-progressBar_text">Place Holder Text</span>
                 </div>
             </div>
 
-            <br />
-
-            <button id="import_rom_xml-upload-btn" type="button" class="btn btn-primary" data-dismiss="modal" value="Upload">Upload</button>
-        </form>
-
       </div>
+        <div class="modal-footer">
+            <button id="import_rom_xml-upload-btn" type="button" class="btn btn-primary" value="Upload">Upload</button>
+        </div>
     </div>
   </div>
 </div>

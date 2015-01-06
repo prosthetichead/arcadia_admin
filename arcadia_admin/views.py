@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, request, Response, jsonify
-from arcadia_admin import app, db, models, theGameDB, ScanRoms, ReadRomList
+from arcadia_admin import app, db, models, OnlineDataProviders, ScanRoms, ReadGameList
 from forms import PlatformForm
 import os
 from werkzeug import utils
@@ -7,6 +7,7 @@ from uuid import uuid4
 
 
 scanner = None
+readGameList = None
 
 
 @app.before_request
@@ -25,16 +26,19 @@ def page_not_found(e):
 @app.route('/platform')
 def platform_view_all():
 	platforms = models.Platform.query.all()
-
 	return render_template("platforms.html", title="Platforms", platforms=platforms)
 
+@app.route('/regions')
+def regions_view_all():
+	regions = models.Regions.query.all()
+	return render_template("regions.html", title="Regions", regions=regions)
 
 @app.route('/platform/new', defaults={'platform_id': None}, methods=['GET', 'POST'])
 @app.route('/platform/<platform_id>/edit', methods=['GET', 'POST'])
 def platform_edit_form(platform_id):
 	form = PlatformForm()
 
-	form.gamedb_id.choices = theGameDB.gameDB_platform_choices.iteritems()
+	form.giantbomb_id.choices = OnlineDataProviders.thegamesdb_platform_choices.iteritems()
 
 	if platform_id is not None:  # get existing platform data and fill in the boxes
 		platform = models.Platform.query.get_or_404(platform_id)
@@ -57,7 +61,8 @@ def platform_edit_form(platform_id):
 
 		db.session.add(platform)
 		db.session.commit()
-		flash('platform name ="%s", active=%s' % (form.name.data, str(form.active.data)))
+		flash('platform "%s" updated' % (form.name.data) )
+
 		return redirect('/platform')
 
 	return render_template('platform_edit.html',
@@ -87,27 +92,57 @@ def platform_view(platform_id):
 		return render_template("platform.html", title=page_title, platform=platform, games=games)
 
 
-@app.route('/platform/upload_rom_xml', methods=['POST'])
-def upload_rom_xml():
-	f = request.files['file']
-	# TODO: Check if the file is one of the allowed types/extensions (check its XML)
-	# Make the filename safe, remove unsupported chars
-	filename = str(uuid4())  # utils.secure_filename(f.filename)
-	f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-	return jsonify(result='OK', filename=filename)
+@app.route('/platform/<platform_id>/_load_game_list', methods=['GET', 'POST'])
+def load_game_list(platform_id):
+	if request.method == 'POST':
+		f = request.files['file']
+		file_type = os.path.splitext(f.filename)[1]
+		filename = str(uuid4())  # utils.secure_filename(f.filename)
+		f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		return jsonify(result='OK', filename=filename, file_type=file_type)
+	elif request.method == 'GET':
+		filename = request.args.get('filename')
+		filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+		file_type = request.args.get('file_type').lower()
+
+		global readGameList
+
+		if readGameList is None:
+			if file_type == '.xml':
+				readGameList = ReadGameList.Generic_XML_List(xml_file_path=filename, platform_id=platform_id)
+				readGameList.start()
+				return jsonify(status='running', total_games_count=readGameList.total_games_count,
+							   games_processed_count=readGameList.games_processed_count)
+
+		elif readGameList.is_alive():
+			return jsonify(status='running', total_games_count=readGameList.total_games_count,
+						   games_processed_count=readGameList.games_processed_count)
+
+		else:
+			readGameList = None
+			return jsonify(status='ended')
 
 
-@app.route('/platform/<platform_id>/_load_rom_xml/<file_name>')
-def load_rom_xml(platform_id, file_name):
-	f = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
-	readRomList = ReadRomList.Generic_XML_List(xml_file_path=f, platform_id=platform_id)
-	readRomList.start()
-	return jsonify(result='OK')
+@app.route('/platform/<platform_id>/_delete_games', methods=['GET'])
+def delete_games(platform_id):
+	game_id = request.args.get('game_id')
+	try:
+		if game_id == '__ALL':
+			db.session.query(models.Game).filter(models.Game.platform_id == platform_id).delete(
+				synchronize_session=False)
+		else:
+			db.session.query(models.Game).filter((models.Game.platform_id == platform_id)
+												& (models.Game.id == game_id)).delete(
+				synchronize_session=False)
+
+		db.session.commit()
+		return jsonify(result='OK')
+	except Exception, e:
+		return jsonify(result='ERROR', msg=e.message)
 
 
 @app.route('/platform/<platform_id>/_rom_scan')
 def platform_rom_scan(platform_id):
-
 	platform = models.Platform.query.get_or_404(platform_id)
 	rom_path = platform.roms_path
 	extension = platform.extension
@@ -116,9 +151,11 @@ def platform_rom_scan(platform_id):
 	if scanner is None:
 		scanner = ScanRoms.ScanRoms(scan_path=rom_path, file_extension=extension, platform_id=platform_id)
 		scanner.start()
-		return jsonify(status='running', total_games=scanner.total_games_count, games_processed=scanner.games_processed_count)
+		return jsonify(status='running', total_games=scanner.total_games_count,
+					   games_processed=scanner.games_processed_count)
 	elif scanner.is_alive():
-		return jsonify(status='running', total_games=scanner.total_games_count, games_processed=scanner.games_processed_count)
+		return jsonify(status='running', total_games=scanner.total_games_count,
+					   games_processed=scanner.games_processed_count)
 	else:
 		scanner = None
 		return jsonify(status='ended')

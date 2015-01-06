@@ -14,6 +14,6 @@ class PlatformForm(Form):
 	load_string = StringField('Emulator Load String')
 	videos_path = StringField('Videos Path')
 	images_path = StringField('Images Path')
-	gamedb_id = SelectField('GamesDB ID', coerce=str)
+	giantbomb_id = SelectField('GamesDB ID', coerce=str)
 
 	active = BooleanField('Platform Active', default=False)

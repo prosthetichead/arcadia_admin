@@ -1,4 +1,4 @@
-from arcadia_admin import db, models, theGameDB
+from arcadia_admin import db, models, OnlineDataProviders
 from threading import Thread
 import glob
 import os

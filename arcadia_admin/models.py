@@ -4,7 +4,6 @@ from arcadia_admin import db
 class Platform(db.Model):
 	__tablename__ = 'platforms'
 	id = db.Column(db.Integer, primary_key=True)
-	gamedb_id = db.Column(db.String(100))
 	icon_id = db.Column(db.String(255))
 	name = db.Column(db.String(255))
 	desc = db.Column(db.String(4000))
@@ -21,14 +20,18 @@ class Platform(db.Model):
 									lazy='dynamic')
 
 
+class OnlineDataProviders(db.Model):
+	__tablename__ = 'online_data_providers'
+	id = db.Column(db.String(32), primary_key=True)
+	name = db.Column(db.String(255))
+	api_key = db.Column(db.String(255))
+
+
 class Game(db.Model):
 	__tablename__ = 'games'
-	platform_id = db.Column(db.Integer, db.ForeignKey('platforms.id'), primary_key=True)
-	file_name = db.Column(db.String(255), primary_key=True)
-	gamedb_id = db.Column(db.String(255))
-	genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'))
-	region_id = db.Column(db.String(255), default='NONE')
-	crc = db.Column(db.String(255))
+	id = db.Column(db.String(32), primary_key=True)  # MD5 Hash of platform_id + file_name
+	platform_id = db.Column(db.Integer, db.ForeignKey('platforms.id'))
+	file_name = db.Column(db.String(255))
 	game_load_string = db.Column(db.Text)
 	name = db.Column(db.String(255))
 	description = db.Column(db.Text)
@@ -38,14 +41,42 @@ class Game(db.Model):
 	co_op = db.Column(db.Boolean())
 	publisher = db.Column(db.String(255))
 	developer = db.Column(db.String(255))
-	users_stars = db.Column(db.Numeric)
-	gamedb_stars = db.Column(db.Numeric)
-	control_type = db.Column(db.String(255))
-	active = db.Column(db.Boolean())
 	favourite = db.Column(db.Boolean())
-	clone_of = db.Column(db.String(255))
+	stars = db.Column(db.Numeric)
+	active = db.Column(db.Boolean())
 	seconds_played = db.Column(db.Integer)
 	last_played = db.Column(db.Date)
+	clone_of = db.Column(db.String(32))
+
+	def _find_or_create_regions(self, region=' '):
+		q = Regions.query.filter((Regions.alt_names.like('%"' + region + '"%'))
+								| (db.func.lower(Regions.region_name) == db.func.lower(region))
+								| (db.func.lower(Regions.region_abbreviation) == db.func.lower(region)))
+		r = q.first()
+		if not r:
+			r = Regions(region_name=region, region_abbreviation=region)
+		return r
+
+	def _get_regions(self):
+		return [x.region_name for x in self.regions]
+
+	def _set_regions(self, value):
+		# clear the list first
+		while self.regions:
+			del self.regions[0]
+		# add new tags
+		for regions in value:
+			self.regions.append(self._find_or_create_regions(regions))
+
+	str_regions = property(_get_regions,
+							_set_regions,
+							"Property str_region is a simple wrapper for regions relation")
+
+
+GameGenres = db.Table('game_genres',
+	db.Column('game_id', db.Integer, db.ForeignKey('games.id')),
+	db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'))
+)
 
 
 class Genre(db.Model):
@@ -53,8 +84,21 @@ class Genre(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	genre_name = db.Column(db.String(255))
 	alt_names = db.Column(db.String(4000))
-	icon_id = db.Column(db.String(255))
-	games = db.relationship('Game', backref='genre', lazy='dynamic')
+	games = db.relationship("Game", secondary=GameGenres, backref="genres")
+
+GameRegions = db.Table('game_regions',
+	db.Column('game_id', db.Integer, db.ForeignKey('games.id')),
+	db.Column('region_id', db.Integer, db.ForeignKey('regions.id'))
+)
+
+
+class Regions(db.Model):
+	__tablename__ = 'regions'
+	id = db.Column(db.Integer, primary_key=True)
+	region_name = db.Column(db.String(255))
+	region_abbreviation = db.Column(db.String(10))
+	alt_names = db.Column(db.String(4000))
+	games = db.relationship("Game", secondary=GameRegions, backref="regions", lazy='dynamic')
 
 
 class Filter(db.Model):
