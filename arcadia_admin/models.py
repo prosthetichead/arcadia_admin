@@ -1,6 +1,13 @@
 from arcadia_admin import db
 
 
+class OnlineDatabase(db.Model):
+	__tablename__ = 'online_databases'
+	id = db.Column(db.String(32), primary_key=True)
+	name = db.Column(db.String(255))
+	api_key = db.Column(db.String(255))
+
+
 class Platform(db.Model):
 	__tablename__ = 'platforms'
 	id = db.Column(db.Integer, primary_key=True)
@@ -18,13 +25,6 @@ class Platform(db.Model):
 	games = db.relationship('Game', backref='platform', lazy='dynamic')
 	games_active = db.relationship('Game', primaryjoin="and_(Platform.id==Game.platform_id, Game.active == True)",
 									lazy='dynamic')
-
-
-class OnlineDataProviders(db.Model):
-	__tablename__ = 'online_data_providers'
-	id = db.Column(db.String(32), primary_key=True)
-	name = db.Column(db.String(255))
-	api_key = db.Column(db.String(255))
 
 
 class Game(db.Model):

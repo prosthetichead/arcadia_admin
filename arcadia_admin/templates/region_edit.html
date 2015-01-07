@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block breadcrumb %}
+     <ol class="breadcrumb ">
+         <li><a href="/">Home</a></li>
+         <li><a href="/region">Platform</a></li>
+         <li><a href="/platform/{{platform.id}}">{{platform.name}}</a></li>
+         <li class="active">Edit Platform</li>
+     </ol>
+{% endblock %}
+
+{% block content %}
+
+<h3>Region {{ region.name }} </h3>
+
+{% endblock %}

@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request, Response, jsonify
-from arcadia_admin import app, db, models, OnlineDataProviders, ScanRoms, ReadGameList
-from forms import PlatformForm
+from arcadia_admin import app, db, models, AccessOnlineDatabases, ScanRoms, ReadGameList
+from forms import PlatformForm, RegionForm
 import os
 from werkzeug import utils
 from uuid import uuid4
@@ -23,37 +23,53 @@ def page_not_found(e):
 
 @app.route('/')
 @app.route('/index')
+def home():
+	return render_template("index.html", title="Home")
+
 @app.route('/platform')
 def platform_view_all():
 	platforms = models.Platform.query.all()
 	return render_template("platforms.html", title="Platforms", platforms=platforms)
 
-@app.route('/regions')
+@app.route('/region')
 def regions_view_all():
 	regions = models.Regions.query.all()
 	return render_template("regions.html", title="Regions", regions=regions)
+
+
+@app.route('/region/new', defaults={'region_id': None}, methods=['GET', 'POST'])
+@app.route('/region/<region_id>/edit', methods=['GET', 'POST'])
+def region_edit_form(region_id):
+	form = RegionForm()
+
+	if region_id is not None:
+		region = models.Regions.query.get_or_404(region_id)
+	else:
+		region = models.Regions(region_name='')
+
+	if form.validate_on_submit():
+		region.region_name = form.name.data
+		region.region_abbreviation = form.abbreviation.data
+		region.alt_names = form.alt_names.data
+
+
+
+
 
 @app.route('/platform/new', defaults={'platform_id': None}, methods=['GET', 'POST'])
 @app.route('/platform/<platform_id>/edit', methods=['GET', 'POST'])
 def platform_edit_form(platform_id):
 	form = PlatformForm()
 
-	form.giantbomb_id.choices = OnlineDataProviders.thegamesdb_platform_choices.iteritems()
-
 	if platform_id is not None:  # get existing platform data and fill in the boxes
 		platform = models.Platform.query.get_or_404(platform_id)
-		if platform is None:
-			return redirect('/platform')
 	else:
 		platform = models.Platform(name='')
 
 	if form.validate_on_submit():
 		platform.name = form.name.data
 		platform.desc = form.desc.data
-		if form.gamedb_id.data != 'New Platform':
-			platform.gamedb_id = form.gamedb_id.data
 		platform.active = form.active.data
-
 		platform.alias = form.alias.data
 		platform.icon_id = form.icon.data
 		platform.extension = form.rom_extension.data

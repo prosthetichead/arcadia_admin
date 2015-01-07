@@ -1,6 +1,6 @@
 __author__ = 'Ashley'
 from threading import Thread
-from arcadia_admin import db, models, OnlineDataProviders
+from arcadia_admin import db, models, AccessOnlineDatabases
 import xml.etree.ElementTree as ET
 import os
 import re

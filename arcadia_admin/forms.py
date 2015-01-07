@@ -14,6 +14,9 @@ class PlatformForm(Form):
 	load_string = StringField('Emulator Load String')
 	videos_path = StringField('Videos Path')
 	images_path = StringField('Images Path')
-	giantbomb_id = SelectField('GamesDB ID', coerce=str)
-
 	active = BooleanField('Platform Active', default=False)
+
+class RegionForm(Form):
+	name = StringField('Region Name', validators=[DataRequired()])
+	abbreviation = StringField('Region Abbreviation', validators=[DataRequired()])
+	alt_names = StringField('Alternative Names')
