@@ -1,0 +1,78 @@
+<!-- 
+ --- Origin Locations ---
+	TL = Top Left (default if no origin is supplied)
+	TC = Top Center
+	TR = Top Right
+	C  = Center
+	CL = Center Left
+	CR = Center Right
+	BL = Bottom Left
+	BC = Bottom Center
+	BR = Bottom Right
+-->
+<skin id="main" res_width="1600" res_height="1200">	
+
+	<game_list size_x="600" size_y="1050" pos_x="0" pos_y="80">
+		<selected_item>
+			<font file="ARCADE_PIX.TTF" size="24" red="255" green="255" blue="255" alpha="255" > 
+				<shadow offset="2" red="0" green="102" blue="153" alpha="255" />
+			</font>	
+		</selected_item>
+		<normal_item>
+			<font file="ARCADE_PIX.TTF" size="14" red="255" green="255" blue="255" alpha="255" />	
+		</normal_item>
+	</game_list>
+
+	<create_filter size_x="800" size_y="600" pos_x="80" pos_y="80">
+		<developer_publisher pos_x="895" pos_y="900"><font file="ARCADE_PIX.TTF" size="14" red="255" green="255" blue="255" alpha="255" /></developer_publisher>
+		<region pos_x="895" pos_y="900"><font file="ARCADE_PIX.TTF" size="14" red="255" green="255" blue="255" alpha="255" /></region>
+		
+	</create_filter>
+
+	<game_info>
+		<fanart size_x='1600' size_y='1200' pos_x='0' pos_y='0' origin="TL" resize_fit="false">
+			<colour red="255" green="255" blue="255" alpha="70" /> <!-- color to dim the fan art -->
+			<outline width="2" red="0" green="0" blue="0" alpha="0" />
+		</fanart>
+		
+		<clear_logo size_x='450' size_y='450' pos_x='1070' pos_y='10' origin="TC" />
+
+		<description size_x='640' size_y='250' pos_x='750' pos_y='925' origin="TL">
+			<font file="ARCADE_PIX.TTF" size="20" red="55" green="55" blue="255" alpha="255" />
+		</description>
+		
+		<video size_x='640' size_y='480' pos_x='750' pos_y='380' origin="TL"/>
+		<screenshot size_x='640' size_y='480' pos_x='750' pos_y='380' />
+		
+		<!-- Rectangle Item. Used as a border for video and screenshots -->
+		<game_info_border size_x='650' size_y='490' pos_x='745' pos_y='375' origin="TL">
+			<colour red="0" green="0" blue="0" alpha="255" />
+			<outline width="3" red="0" green="102" blue="153" alpha="255" />
+		</game_info_border>
+
+		<genre_icon size_x='64' size_y='64' pos_x='750' pos_y='370' origin="BL" />
+		<platform_icon size_x='32' size_y='32' pos_x='820' pos_y='370' origin="BL" />
+
+		<company_logos size_x='128' size_y='128' pos_x='1070' pos_y='370' origin="BC" />
+
+		<year pos_x='1313' pos_y='885'>
+			<font file="ARCADE_PIX.TTF" size="20" red="255" green="255" blue="255" alpha="255" />	
+		</year>
+
+		<players pos_x='745' pos_y='375' />
+
+		<play_time_title pos_x="895" pos_y="880">
+			<font file="ARCADE_PIX.TTF" size="12" red="255" green="255" blue="255" alpha="255" />
+		</play_time_title>
+		<play_time pos_x="1010" pos_y="880">
+			<font file="ARCADE_PIX.TTF" size="12" red="255" green="255" blue="255" alpha="255" />
+		</play_time>
+		<last_played_title pos_x="895" pos_y="900">
+			<font file="ARCADE_PIX.TTF" size="12" red="255" green="255" blue="255" alpha="255" />
+		</last_played_title>
+		<last_played  pos_x="1010" pos_y="900">
+			<font file="ARCADE_PIX.TTF" size="12" red="255" green="255" blue="255" alpha="255" />
+		</last_played>	
+	</game_info>
+
+</skin>

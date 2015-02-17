@@ -1,0 +1,65 @@
+{% macro render_pagination(pagination) %}
+{% if pagination.items %}
+    <nav>
+            <ul class="pagination pagination-sm pagination-slim">
+                <li>
+                    <a href="#" aria-label="Previous"><span aria-hidden="true">&larr;</span></a>
+                </li>
+                {%- for page in pagination.iter_pages() %}
+                    {% if page %}
+                        {% if page != pagination.page %}
+                            <li><a href="#" onclick="setGetParameter('page', {{ page }});">{{ page }}</a></li>
+                        {% else %}
+                            <li class="active"><span>{{ page }}</span></li>
+                        {% endif %}
+                    {% else %}
+                        <li><a href="#">…</a></li>
+                    {% endif %}
+                {%- endfor %}
+                <li>
+                    <a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+                </li>
+            </ul>
+    </nav>
+{% endif %}
+{% endmacro %}
+
+{% macro render_game_table(games) %}
+        {% if games.items %}
+            <table id="game_table" class="table table-bordered table-striped table-hover">
+            <tr>
+                <th id="options"></th>
+
+                <th id="name"><a href="#" class="sort_order_change">NAME</a></th>
+                <th id="regions">REGIONS</th>
+                <th id="genres">GENRES</th>
+                <th id="active"><a  href="#" class="sort_order_change"><span class="glyphicon glyphicon-ok-sign"></span></a></th>
+            </tr>
+        {% for game in games.items %}
+            <tr class="{% if game.active %} success {% else %} danger {% endif %} " id="{{game.id}}">
+                <td width="90" style="text-align:center;">
+                    <div class="btn-group btn-group-xs" role="group" aria-label="Game Options" >
+                        <button type="button" class="btn btn-warning btn_delete_game"><span class="glyphicon glyphicon-trash" ></span></button>
+                        <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-eye-open"></span></button>
+                        <button type="button" class="btn btn-default btn_online_search"><span class="glyphicon glyphicon-cloud"></span></button>
+                    </div>
+                </td>
+                <td>{{game.name}} <a tabindex="0"  role="button" data-toggle="popover" title="Filename" data-content="{{ game.file_name }}"><img src="{{ url_for('static', filename='img/game_file.png') }}" </a></td>
+                <td>
+                    {% for region in game.regions %}
+                        <a href="/region/{{ region.id }}">{{ region.abbreviation }}</a>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for genre in game.genres %}
+                        <a href="/genres/{{ genre.id }}">{{ genre.name }}</a>
+                    {% endfor %}
+                </td>
+                <td width="30" style="text-align:center;">{% if game.active %} <span class="glyphicon glyphicon-ok"></span> {% else %}   {% endif %}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        {% else %}
+            No Games
+        {% endif %}
+{% endmacro %}

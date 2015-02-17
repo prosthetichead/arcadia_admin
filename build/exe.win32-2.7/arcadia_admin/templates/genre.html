@@ -1,0 +1,33 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+
+{% block scripts %}
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover()
+    })
+</script>
+{% endblock %}
+
+{% block breadcrumb %}
+     <ol class="breadcrumb ">
+       <li><a href="/">Home</a></li>
+       <li><a href="/genre">Genre</a></li>
+       <li class="active">{{genre.name}}</li>
+     </ol>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="panel panel-default">
+  <div class="panel-heading">{{ macros.render_pagination(games)|safe }}</div>
+  <div class="panel-body">
+    {{ macros.render_game_table(games)|safe }}
+  </div>
+  <div class="panel-footer">{{ macros.render_pagination(games)|safe }}</div>
+</div>
+
+
+{% endblock %}
