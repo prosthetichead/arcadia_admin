@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms.fields import StringField, BooleanField, TextAreaField, IntegerField, SelectField
+from wtforms.fields import StringField, BooleanField, TextAreaField, IntegerField, SelectField, FileField, SelectMultipleField
 from wtforms.validators import DataRequired
 
 
@@ -16,10 +16,27 @@ class PlatformForm(Form):
 	images_path = StringField('Images Path')
 	active = BooleanField('Platform Active', default=False)
 
+
+class GameForm(Form):
+	name = StringField('Game Name', validators=[DataRequired()])
+	# filename = StringField('Game Filename', validators=[DataRequired()])
+	desc = TextAreaField('Description')
+	release_year = StringField('Release Year')
+	publisher = StringField('Publisher')
+	developer = StringField('Developer')
+	genres = SelectMultipleField('Genres', coerce=int)
+
+
 class RegionForm(Form):
 	name = StringField('Region Name', validators=[DataRequired()])
 	abbreviation = StringField('Region Abbreviation', validators=[DataRequired()])
 	alt_names = StringField('Alternative Names')
+
+
+class GenreForm(Form):
+	name = StringField('Genre Name', validators=[DataRequired()])
+	alt_names = StringField('Alternative Names')
+
 
 class GameOnlineSearch(Form):
 	provider = SelectField('Online Provider')

@@ -43,8 +43,8 @@ class Generic_XML_List(Thread):
 
 			game_genres = []
 			if gameNode.find('genre') is not None:
-				genres = gameNode.find('genre').text
-				game_genres = [genres]
+				genres = gameNode.find('genre').text.split('/')
+				game_genres = genres
 
 			# Publisher
 			if gameNode.find('manufacturer') is not None:
@@ -53,8 +53,8 @@ class Generic_XML_List(Thread):
 				publisher = ''
 
 
-			# Generate ID based on Publisher ID and Game File Name
-			game_id = hashlib.md5(self.platform_id + game_file_name).hexdigest()
+			# Generate ID based on platform ID and Game File Name
+			game_id = hashlib.md5(self.platform_id + game_file_name.lower()).hexdigest()
 
 			game = models.Game.query.filter(models.Game.id == game_id).first()
 			if game is None:

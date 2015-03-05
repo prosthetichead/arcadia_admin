@@ -7,9 +7,13 @@
 $(function () {
   $('[data-toggle="popover"]').popover()
 })
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
 
 function rom_scan(){
     $.getJSON("{{ platform.id }}/_rom_scan",function(data){
+         $('#romScan_text').text("Activating all available roms");
          $("#rom_scan-dialog").modal("show");
         if (data.status == 'running') {
             var percentage = (data.games_processed / data.total_games) * 100;
@@ -24,6 +28,25 @@ function rom_scan(){
             location.reload(true);
         }; 
     }); 
+}
+
+function rom_scan_add_all(){
+    $.getJSON("{{ platform.id }}/_rom_scan_add_all",function(data){
+         $('#romScan_text').text("Scanning all roms and adding them.");
+         $("#rom_scan-dialog").modal("show");
+        if (data.status == 'running') {
+            var percentage = (data.games_processed / data.total_games) * 100;
+            $("#progressBar").css("width", percentage + "%");
+            $("#progressBar_text").text(data.games_processed + " of " + data.total_games + " Roms Scaned ");
+            setTimeout("rom_scan_add_all()",1000);
+        }
+        else{
+            $("#progressBar_text").text("Complete");
+            $("#progressBar").css("width", 0);
+            $('#rom_scan-dialog').modal('hide');
+            location.reload(true);
+        };
+    });
 }
 
 function import_rom_xml() {
@@ -81,13 +104,16 @@ $(function() {
     <li><a href="{{platform.id}}/edit">Edit Platform</a> </li>
 
     <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Games<span class="caret"></span></a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Platform Options<span class="caret"></span></a>
         <ul class="dropdown-menu" role="menu">
-            <li> <a onclick="rom_scan()" href="javascript:void(0);">Scan For Games</a></li>
-
+            <li> <a onclick="rom_scan()" href="javascript:void(0);">Scan For Available Games</a></li>
             <li class="divider"></li>
-            <li> <a onclick="import_rom_xml()" href="javascript:void(0);">Import Game Information from XML</a></li>
-            <li> <a href="javascript:void(0);" onclick="delete_game('__ALL', '{{platform.id}}');">Delete All Games</a></li>
+            <li> <a onclick=" " href="javascript:void(0);">Add New Rom File Manually</a></li>
+            <li class="divider"></li>
+            <li> <a onclick="import_rom_xml()" href="javascript:void(0);" data-toggle="tooltip" data-placement="right" data-container="body" title="Good for systems you want to know what games are missing or rom file names are NOT the same as game names">Import Game Information from XML</a></li>
+            <li> <a onclick="rom_scan_add_all()" href="javascript:void(0);" data-toggle="tooltip" data-placement="right" data-container="body" title="Good for systems you do not want every game or rom file names are the same as game names">Import Game Information from Rom Folder</a></li>
+
+            <li> <a href="javascript:void(0);" onclick="delete_game('__ALL', '{{platform.id}}');">Clear all game information</a></li>
         </ul>
     </li>
 
@@ -111,11 +137,11 @@ $(function() {
                     <div id="platform_panel" class="panel-collapse collapse out">
                     <div class="panel-body">
                         <div class="row">
-                            <div class="col-xs-6 col-md-4"><p><strong>Platform ID</strong> {{platform.id}}</p></div>
-                            <div class="col-xs-6 col-md-8"><p><strong>Description</strong></p><div style="text-align: justify; text-justify: inter-word;">{{platform.desc | nl2br}}</div> </div>
+                            <div class="col-md-4"><p><strong>Platform ID</strong> {{platform.id}}</p></div>
+                            <div class="col-md-8"><p><strong>Description</strong></p><div style="text-align: justify; text-justify: inter-word;">{{platform.desc | nl2br}}</div> </div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-6 col-md-4"><p><strong>Alias</strong> {{platform.alias}}</p></div>
+                            <div class="col-md-4"><p><strong>Alias</strong> {{platform.alias}}</p></div>
 
                         </div>
                     </div>
@@ -141,8 +167,8 @@ $(function() {
       <div class="modal-header">
         <h4 class="modal-title" id="rom_scan-label">Scan Roms</h4>
       </div>
-      <div class="modal-body">
-        <p>Scanning roms directory for changes <br /> " {{ platform.roms_path }} "</p>
+      <div id="romScan_body" class="modal-body">
+        <p><span id="romScan_text"> Scanning roms directory for changes </span> <br /> " {{ platform.roms_path }} "</p>
         <div class="progress progress-striped active">
             <div id="progressBar" class="progress-bar" style="width: 0%">
                 <span id="progressBar_text"></span>
@@ -154,7 +180,8 @@ $(function() {
   </div>
 </div>
 
-<div class="modal fade" id="import_rom_xml-dialog" tabindex="-1" role="dialog" aria-labelledby="import_rom_xml-label" aria-hidden="true" >
+
+<div class="modal fade" id="import_rom_xml-dialog" tabindex="-1" role="dialog" aria-labelledby="import_rom_xml-label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">

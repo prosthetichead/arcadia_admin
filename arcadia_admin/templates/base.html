@@ -4,8 +4,13 @@
       <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
       <script type='text/javascript' src="{{ url_for('static', filename='js/jquery-1.11.1.min.js') }}"></script>
       <script type='text/javascript' src="{{ url_for('static', filename='js/bootstrap.min.js') }} "></script>
+      <script type='text/javascript' src="{{ url_for('static', filename='js/bootstrap-multiselect.js') }} "></script>
+      <script type='text/javascript' src="{{ url_for('static', filename='js/typeahead.bundle.js') }} "></script>
+      <script type="text/javascript" src="{{ url_for('static', filename='js/scrollfix.js') }} " ></script>
+
 
       <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-multiselect.css') }}">
       <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/arcadia_admin.css') }}">
 
 
@@ -17,7 +22,7 @@
 
 
   </head>
-  <body>
+  <body onunload="unloadP('{{ title }}')" onload="loadP(' {{ title }} ')">
 
 
  <!-- Static navbar -->
@@ -39,6 +44,7 @@
             <li><a href="/settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
           </ul>
 
+            <!--
                   <div class="col-sm-3 col-md-3 pull-right">
             <form class="nparameters" role="search">
                 <div class="input-group">
@@ -49,6 +55,7 @@
                 </div>
             </form>
         </div>
+        -->
 
         </div><!--/.nav-collapse -->
       </div>
@@ -69,6 +76,42 @@
 
      {% block breadcrumb %}{% endblock %}
      {% block content %}{% endblock %}
+</div>
+
+
+
+
+ <div class="modal fade" id="online_search-dialog" tabindex="-1" role="dialog" aria-labelledby="online_search-label" aria-hidden="true"  >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="online_search-label">Get Game Data From Online</h4>
+      </div>
+      <div id="online_search_body" class="modal-body">
+
+            <input type="hidden" value="0" id="onlineSearchGameID"/>
+
+            <div class="loading_div" id="onlineSearch_loading_div">
+                <img src="{{ url_for('static', filename='img/loading.gif') }}" class="loading_img"/>
+            </div>
+
+            <div  class="form-group">
+                <select class="form-control" id="onlineSearchProvider">
+                    <option value="giantbomb">giantBomb.com</option>
+                    <option value="thegamedb">theGameDB.com</option>
+                </select>
+                <label for="onlineSearchString">Search</label>
+                <input type="text" class="form-control" id="onlineSearchString" value=" "> <button class="btn btn-primary" id="onlineSearchBtn">Search</button>
+                <select class="form-control" id="onlineSearchResult">
+                    <option>Select Game</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" id="onlineSearchUpdateBtn">Update Game Detail Using Selected</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 

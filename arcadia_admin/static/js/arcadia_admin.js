@@ -10,15 +10,6 @@
         var row_id = $(this).closest('tr').attr('id');
         delete_game(row_id, 0);
     });
-
-    $(".btn_online_search").click(function() {
-        var game_id = $(this).closest('tr').attr('id');
-        $.getJSON("/game/" + game_id + "/_online_search", function(data){
-
-        });
-    });
-
-
 function delete_game(game_id, platform_id) {
     var p = { game_id:game_id, platform_id:platform_id };
     var params = jQuery.param( p );
@@ -40,7 +31,7 @@ function delete_game(game_id, platform_id) {
 *	Adapted to handle '#' in the URL
 *   modified by ashley colman to not reload the page but to take a url string and return the url
 */
-function setGetParameter(paramName, paramValue, url_to_change="")
+function setGetParameter(paramName, paramValue, url_to_change)
 {
     var url = url_to_change;
     if (url == "")
@@ -66,6 +57,13 @@ function setGetParameter(paramName, paramValue, url_to_change="")
     return url + anchor;
 }
 
+
+function setGetParameter_andGo(paramName, paramValue, url_to_change)
+{
+    var address = setGetParameter(paramName, paramValue, url_to_change);
+    window.location.href = address;
+}
+
 /*
 *   Changes the sort order by sending Parameter in the url
 */
@@ -88,4 +86,52 @@ function setGetParameter(paramName, paramValue, url_to_change="")
         var url = setGetParameter('order', sort_order, url);
 
         window.location.href = url;
+    });
+
+
+
+ /* Online Searching */
+     $(".btn_online_search").click(function() {
+        var game_id = $(this).closest("tr").attr('id');
+        var game_name = $(this).closest("tr").find(".gameName").text();
+
+        $("#onlineSearchGameID").val(game_id);
+        $("#onlineSearchString").val(game_name);
+        $('#online_search-dialog').modal('show');
+        onlineSearch();
+    });
+    function onlineSearch( )
+    {
+        $("#onlineSearchResult").find('option').remove().end();
+        var searchString = $("#onlineSearchString").val();
+        var provider =  $("#onlineSearchProvider").val();
+
+        $("#onlineSearch_loading_div").show();
+        $.getJSON("/_online_search?search=" + searchString + "&provider=" + provider ,function(data){
+            $.each(data, function(i, record) {
+                var o = new Option(record.name + ' - ' + record.platform, record.id);
+                $(o).html(record.name + ' - ' + record.platform);
+                $("#onlineSearchResult").append(o);
+             });
+        $("#onlineSearch_loading_div").hide();
+        });
+    }
+    $("#onlineSearchBtn").click(function() {
+        onlineSearch();
+    });
+
+    /* Online Searching - Update item using selected item*/
+    $("#onlineSearchUpdateBtn").click(function() {
+        $("#onlineSearch_loading_div").show();
+        var provider =  $("#onlineSearchProvider").val();
+        var provider_game_id =  $("#onlineSearchResult").val();
+        var game_id = $("#onlineSearchGameID").val();
+        $.getJSON("/_update_from_online/game/" + game_id + "?provider=" + provider + "&provider_game_id=" + provider_game_id ,function(data){
+            if (data.status == 'complete'){
+
+                $("#onlineSearch_loading_div").hide();
+                $('#online_search-dialog').modal('hide');
+                window.location.reload(true);
+            }
+        });
     });
