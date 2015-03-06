@@ -27,15 +27,12 @@
         <img src="{{game.id}}/img/clearlogo" />
     </div>
 
-
-
-
     </div>
 
 <!-- Button trigger modal -->
 
  <div class="row">
-            <div class="col-xs-6">
+            <div class="col-xs-12 col-md-6">
                 <div class="panel panel-default">
                 <div class="panel-heading">{{game.name}} </div>
                     <div class="panel-body">
@@ -46,22 +43,22 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-3">
+            <div class="col-xs-12 col-md-3">
                 <div class="panel panel-default">
                 <div class="panel-heading">Screen Shot</div>
-                    <div class="panel-body" style="text-align:center; height:300px">
-                        <div class="img-wrap">
+                    <div class="panel-body" style="text-align:center; ">
+                        <div class="img-wrap" style="width: 90%;">
                             <img src="{{game.id}}/img/screen" style="max-width:100%;max-height:100%;" />
                             <span id="set_screenshot_image" class="load glyphicon glyphicon-upload"></span>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-xs-3">
+            <div class="col-xs-12 col-md-3">
                 <div class="panel panel-default">
                 <div class="panel-heading">Video</div>
                     <div class="panel-body" style="text-align:center; height:300px">
-                        <video width="320" height="240" preload="none" controls poster="screen_shot.png">
+                        <video width="100%" height="50%" preload="none" controls poster="{{game.id}}/img/screen">
                             <source src="{{game.id}}/vid" type="video/mp4">
                             Your browser does not support the video tag.
                         </video>
@@ -69,46 +66,6 @@
                 </div>
             </div>
 </div>
-
- <div class="modal fade" id="change_image-dialog" tabindex="-1" role="dialog" aria-labelledby="change_image-label" aria-hidden="true"  >
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="change_image-label">Change Image</h4>
-      </div>
-      <div id="change_image-body" class="modal-body">
-
-            <input type="hidden" value="0" id="change_image-GameID"/>
-
-            <div class="loading_div" id="change_image-loading_div">
-                <img src="{{ url_for('static', filename='img/loading.gif') }}" class="loading_img"/>
-            </div>
-
-
-            <div  class="form-group">
-                <select class="form-control" id="change_image-Providers">
-                    <option value="giantbomb">giantBomb.com</option>
-                    <option value="thegamedb">theGameDB.com</option>
-                </select>
-                <label for="change_image-String">Search</label>
-                <input type="text" class="form-control" id="change_image-String" value=" "> <button class="btn btn-primary" id="change_image-SearchBtn">Search</button>
-                <select class="form-control" id="change_image-Result">
-                    <option>Select Game</option>
-                </select>
-            </div>
-
-            <div class="img_grid_div">
-                <ul id="change_image-list">
-                </ul>
-            </div>
-
-      </div>
-    </div>
-  </div>
-</div>
-
-
 
 
 
@@ -123,26 +80,20 @@
         $('body').css('background-color', '#2b3e50');
     });
 
-
     $("#set_screenshot_image").click(function() {
 
-
         $('#change_image-dialog').modal('show');
-        show_images();
+        var searchString_TXT = $('#change_image-dialog').find('.online_search-string');
+        var searchResult_DDL = $('#change_image-dialog').find('.online_search-result');
+        var searchProvider = $('#change_image-dialog').find('.online_search-provider').val();
+
+        searchString_TXT.val('{{game.name}}');
+        online_search('{{game.name}}', searchProvider, searchResult_DDL)
 
     });
 
 
-    function show_images()
-    {
 
-        $("#change_image-list").empty();
-        $.getJSON("/_game_image_search_online" ,function(data){
-             $.each(data, function(i, record) {
-                $('#change_image-list').append('<li><img src="' + record.thumbUrl + '"/></li>');
-             });
-        });
-    }
 
 
 </script>

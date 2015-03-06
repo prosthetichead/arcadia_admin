@@ -2,26 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a9fb1945-edf5-48ce-a24b-5358555cfd6c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/arcadia_admin/templates/game.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/arcadia_admin/templates/game_edit.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/arcadia_admin/templates/genre_edit.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/arcadia_admin/templates/genres.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/arcadia_admin/static/js/scrollfix.js" />
-      <change type="DELETED" beforePath="C:\Users\Ashley\Documents\Python Projects\arcadia_admin\arcadia_admin\static\js\npm.js" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/static/img/Thumbs.db" afterPath="$PROJECT_DIR$/arcadia_admin/static/img/Thumbs.db" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia.db" afterPath="$PROJECT_DIR$/arcadia.db" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/AccessOnlineDatabases.py" afterPath="$PROJECT_DIR$/arcadia_admin/AccessOnlineDatabases.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/ReadGameList.py" afterPath="$PROJECT_DIR$/arcadia_admin/ReadGameList.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/ScanRoms.py" afterPath="$PROJECT_DIR$/arcadia_admin/ScanRoms.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/static/css/arcadia_admin.css" afterPath="$PROJECT_DIR$/arcadia_admin/static/css/arcadia_admin.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/static/js/arcadia_admin.js" afterPath="$PROJECT_DIR$/arcadia_admin/static/js/arcadia_admin.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/templates/base.html" afterPath="$PROJECT_DIR$/arcadia_admin/templates/base.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/forms.py" afterPath="$PROJECT_DIR$/arcadia_admin/forms.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/templates/macros.jinja" afterPath="$PROJECT_DIR$/arcadia_admin/templates/macros.jinja" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/models.py" afterPath="$PROJECT_DIR$/arcadia_admin/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/templates/platform.html" afterPath="$PROJECT_DIR$/arcadia_admin/templates/platform.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/templates/platforms.html" afterPath="$PROJECT_DIR$/arcadia_admin/templates/platforms.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/views.py" afterPath="$PROJECT_DIR$/arcadia_admin/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/arcadia_admin/templates/game.html" afterPath="$PROJECT_DIR$/arcadia_admin/templates/game.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="python.iws" />
@@ -46,11 +31,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arcadia_admin/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7844081" vertical-offset="5441" max-vertical-offset="6480">
-              <caret line="391" column="41" selection-start-line="391" selection-start-column="41" selection-end-line="391" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="5441" max-vertical-offset="6480">
+              <caret line="371" column="20" selection-start-line="371" selection-start-column="4" selection-end-line="371" selection-end-column="20" />
               <folding>
                 <element signature="e#0#99#0" expanded="true" />
               </folding>
@@ -61,7 +46,7 @@
       <file leaf-file-name="platform.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arcadia_admin/templates/platform.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2443" max-vertical-offset="3842">
+            <state vertical-scroll-proportion="-19.4" vertical-offset="2443" max-vertical-offset="3616">
               <caret line="183" column="181" selection-start-line="183" selection-start-column="181" selection-end-line="183" selection-end-column="181" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
@@ -70,14 +55,15 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="game.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="game.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/arcadia_admin/templates/game.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1316" max-vertical-offset="2618">
-              <caret line="100" column="33" selection-start-line="100" selection-start-column="24" selection-end-line="100" selection-end-column="36" />
+            <state vertical-scroll-proportion="0.5739645" vertical-offset="170" max-vertical-offset="1680">
+              <caret line="47" column="60" selection-start-line="47" selection-start-column="60" selection-end-line="47" selection-end-column="60" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#1;n#div#0;n#div#1;n#div#1;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#1;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#img#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#1;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#1;n#div#0;n#div#2;n#div#1;n#!!top" expanded="true" />
               </folding>
@@ -88,7 +74,7 @@
       <file leaf-file-name="game_edit.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arcadia_admin/templates/game_edit.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="348" max-vertical-offset="1343">
+            <state vertical-scroll-proportion="-30.32" vertical-offset="250" max-vertical-offset="1264">
               <caret line="63" column="0" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#div#3;n#form#0;n#!!top" expanded="true" />
@@ -112,8 +98,8 @@
       <file leaf-file-name="arcadia_admin.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arcadia_admin/static/js/arcadia_admin.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1217" max-vertical-offset="2431">
-              <caret line="111" column="41" selection-start-line="111" selection-start-column="35" selection-end-line="111" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1377" max-vertical-offset="2496">
+              <caret line="131" column="27" selection-start-line="131" selection-start-column="27" selection-end-line="131" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -132,8 +118,8 @@
       <file leaf-file-name="base.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arcadia_admin/templates/base.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1173" max-vertical-offset="2176">
-              <caret line="108" column="18" selection-start-line="98" selection-start-column="12" selection-end-line="108" selection-end-column="18" />
+            <state vertical-scroll-proportion="-70.12" vertical-offset="695" max-vertical-offset="2784">
+              <caret line="153" column="24" selection-start-line="153" selection-start-column="24" selection-end-line="153" selection-end-column="41" />
               <folding>
                 <element signature="n#style#0;n#a#0;n#div#0;n#div#0;n#nav#0;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#img#0;n#a#0;n#div#0;n#div#0;n#nav#0;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -145,8 +131,8 @@
       <file leaf-file-name="arcadia_admin.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arcadia_admin/static/css/arcadia_admin.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1409" max-vertical-offset="2320">
-              <caret line="96" column="17" selection-start-line="96" selection-start-column="17" selection-end-line="96" selection-end-column="17" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1281" max-vertical-offset="2336">
+              <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -155,7 +141,7 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/arcadia_admin/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2429" max-vertical-offset="3468">
+            <state vertical-scroll-proportion="0.0" vertical-offset="2225" max-vertical-offset="3264">
               <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
               <folding>
                 <element signature="e#1915#2208#0" expanded="false" />
@@ -215,12 +201,12 @@
         <option value="$PROJECT_DIR$/arcadia_admin/templates/macros.jinja" />
         <option value="$PROJECT_DIR$/arcadia_admin/AccessOnlineDatabases.py" />
         <option value="$PROJECT_DIR$/arcadia_admin/static/js/scrollfix.js" />
-        <option value="$PROJECT_DIR$/arcadia_admin/templates/base.html" />
         <option value="$PROJECT_DIR$/arcadia_admin/templates/platform.html" />
-        <option value="$PROJECT_DIR$/arcadia_admin/static/js/arcadia_admin.js" />
         <option value="$PROJECT_DIR$/arcadia_admin/views.py" />
-        <option value="$PROJECT_DIR$/arcadia_admin/templates/game.html" />
+        <option value="$PROJECT_DIR$/arcadia_admin/templates/base.html" />
+        <option value="$PROJECT_DIR$/arcadia_admin/static/js/arcadia_admin.js" />
         <option value="$PROJECT_DIR$/arcadia_admin/static/css/arcadia_admin.css" />
+        <option value="$PROJECT_DIR$/arcadia_admin/templates/game.html" />
       </list>
     </option>
   </component>
@@ -563,7 +549,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1296875" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
@@ -915,16 +901,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/arcadia_admin/templates/game_edit.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="348" max-vertical-offset="1343">
-          <caret line="63" column="0" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#div#3;n#form#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/arcadia_admin/AccessOnlineDatabases.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1710" max-vertical-offset="2720">
@@ -935,13 +911,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/arcadia_admin/templates/base.html">
+    <entry file="file://$PROJECT_DIR$/arcadia_admin/static/js/scrollfix.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1173" max-vertical-offset="2176">
-          <caret line="108" column="18" selection-start-line="98" selection-start-column="12" selection-end-line="108" selection-end-column="18" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1003">
+          <caret line="2" column="83" selection-start-line="2" selection-start-column="83" selection-end-line="2" selection-end-column="83" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/arcadia_admin/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="5441" max-vertical-offset="6480">
+          <caret line="371" column="20" selection-start-line="371" selection-start-column="4" selection-end-line="371" selection-end-column="20" />
           <folding>
-            <element signature="n#style#0;n#a#0;n#div#0;n#div#0;n#nav#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#img#0;n#a#0;n#div#0;n#div#0;n#nav#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="e#0#99#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/arcadia_admin/templates/platform.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-19.4" vertical-offset="2443" max-vertical-offset="3616">
+          <caret line="183" column="181" selection-start-line="183" selection-start-column="181" selection-end-line="183" selection-end-column="181" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -963,59 +956,53 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/arcadia_admin/static/js/scrollfix.js">
+    <entry file="file://$PROJECT_DIR$/arcadia_admin/templates/game_edit.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1003">
-          <caret line="2" column="83" selection-start-line="2" selection-start-column="83" selection-end-line="2" selection-end-column="83" />
-          <folding />
+        <state vertical-scroll-proportion="-30.32" vertical-offset="250" max-vertical-offset="1264">
+          <caret line="63" column="0" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#div#3;n#form#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/arcadia_admin/static/js/arcadia_admin.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1217" max-vertical-offset="2431">
-          <caret line="111" column="41" selection-start-line="111" selection-start-column="35" selection-end-line="111" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1377" max-vertical-offset="2496">
+          <caret line="131" column="27" selection-start-line="131" selection-start-column="27" selection-end-line="131" selection-end-column="27" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/arcadia_admin/templates/platform.html">
+    <entry file="file://$PROJECT_DIR$/arcadia_admin/static/css/arcadia_admin.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2443" max-vertical-offset="3842">
-          <caret line="183" column="181" selection-start-line="183" selection-start-column="181" selection-end-line="183" selection-end-column="181" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1281" max-vertical-offset="2336">
+          <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/arcadia_admin/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-70.12" vertical-offset="695" max-vertical-offset="2784">
+          <caret line="153" column="24" selection-start-line="153" selection-start-column="24" selection-end-line="153" selection-end-column="41" />
           <folding>
-            <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#a#0;n#div#0;n#div#0;n#nav#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#img#0;n#a#0;n#div#0;n#div#0;n#nav#0;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/arcadia_admin/templates/game.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1316" max-vertical-offset="2618">
-          <caret line="100" column="33" selection-start-line="100" selection-start-column="24" selection-end-line="100" selection-end-column="36" />
+        <state vertical-scroll-proportion="0.5739645" vertical-offset="170" max-vertical-offset="1680">
+          <caret line="47" column="60" selection-start-line="47" selection-start-column="60" selection-end-line="47" selection-end-column="60" />
           <folding>
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#1;n#div#0;n#div#1;n#div#1;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#1;n#!!top" expanded="true" />
             <element signature="n#style#0;n#img#0;n#div#0;n#div#1;n#div#0;n#div#1;n#div#1;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#1;n#div#0;n#div#2;n#div#1;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/arcadia_admin/static/css/arcadia_admin.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1409" max-vertical-offset="2320">
-          <caret line="96" column="17" selection-start-line="96" selection-start-column="17" selection-end-line="96" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/arcadia_admin/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7844081" vertical-offset="5441" max-vertical-offset="6480">
-          <caret line="391" column="41" selection-start-line="391" selection-start-column="41" selection-end-line="391" selection-end-column="41" />
-          <folding>
-            <element signature="e#0#99#0" expanded="true" />
           </folding>
         </state>
       </provider>

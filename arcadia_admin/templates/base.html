@@ -102,13 +102,59 @@
                     <option value="thegamedb">theGameDB.com</option>
                 </select>
                 <label for="onlineSearchString">Search</label>
-                <input type="text" class="form-control" id="onlineSearchString" value=" "> <button class="btn btn-primary" id="onlineSearchBtn">Search</button>
-                <select class="form-control" id="onlineSearchResult">
+                <input type="text" class="form-control online_search-string" id="onlineSearchString" value=" "> <button class="btn btn-primary" id="onlineSearchBtn">Search</button>
+                <select class="form-control online_search-result" id="onlineSearchResult">
                     <option>Select Game</option>
                 </select>
             </div>
 
             <button class="btn btn-primary" id="onlineSearchUpdateBtn">Update Game Detail Using Selected</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="modal fade" id="change_image-dialog" tabindex="-1" role="dialog" aria-labelledby="change_image-label" aria-hidden="true"  >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="change_image-label">Change Image</h4>
+      </div>
+      <div id="change_image-body" class="modal-body">
+
+            <input type="hidden" value="0" id="change_image-GameID"/>
+
+            <div  class="form-group">
+                <div class="loading_div" id="change_image-loading_div">
+                    <img src="{{ url_for('static', filename='img/loading.gif') }}" class="loading_img"/>
+                </div>
+
+                <select class="form-control online_search-provider" id="change_image-Providers">
+                    <option value="giantbomb">giantBomb.com</option>
+                    <option value="thegamedb">theGameDB.com</option>
+                </select>
+                <label for="change_image-String">Search</label>
+                <div class="input-group">
+                    <input type="text" class="form-control online_search-string" id="change_image-String" value=" ">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary online_search-btn" id="change_image-SearchBtn">Search</button>
+                    </span>
+                </div>
+                <label for="change_image-Result">Results</label>
+                <select class="form-control online_search-result" id="change_image-Result">
+                    <option>Select Game</option>
+                </select>
+            </div>
+
+
+            <div class="img_grid_div">
+                <ul id="change_image-list">
+                </ul>
+            </div>
+
       </div>
     </div>
   </div>

@@ -90,35 +90,48 @@ function setGetParameter_andGo(paramName, paramValue, url_to_change)
 
 
 
- /* Online Searching */
-     $(".btn_online_search").click(function() {
-        var game_id = $(this).closest("tr").attr('id');
-        var game_name = $(this).closest("tr").find(".gameName").text();
 
-        $("#onlineSearchGameID").val(game_id);
-        $("#onlineSearchString").val(game_name);
-        $('#online_search-dialog').modal('show');
-        onlineSearch();
-    });
-    function onlineSearch( )
-    {
-        $("#onlineSearchResult").find('option').remove().end();
-        var searchString = $("#onlineSearchString").val();
-        var provider =  $("#onlineSearchProvider").val();
 
-        $("#onlineSearch_loading_div").show();
-        $.getJSON("/_online_search?search=" + searchString + "&provider=" + provider ,function(data){
+     function online_search(searchString, searchProvider, searchResult_DDL)
+     {
+        var loadingDiv = searchResult_DDL.closest('.form-group').find('.loading_div');
+        searchResult_DDL.find('option').remove().end();
+        loadingDiv.show();
+        $.getJSON("/_online_search?search=" + searchString + "&provider=" + searchProvider ,function(data){
             $.each(data, function(i, record) {
                 var o = new Option(record.name + ' - ' + record.platform, record.id);
                 $(o).html(record.name + ' - ' + record.platform);
-                $("#onlineSearchResult").append(o);
+                searchResult_DDL.append(o);
              });
-        $("#onlineSearch_loading_div").hide();
+             loadingDiv.hide();
         });
-    }
-    $("#onlineSearchBtn").click(function() {
-        onlineSearch();
-    });
+     }
+     $(".online_search-btn").click(function() {
+        var searchString = $(this).closest('.form-group').find('.online_search-string').val();
+        var searchProvider = $(this).closest('.form-group').find('.online_search-provider').val();
+        var searchResult_DDL =  $(this).closest('.form-group').find('.online_search-result');
+
+        online_search(searchString, searchProvider, searchResult_DDL);
+     });
+
+
+     /* Online Image Searching */
+     $("#change_image-Result").change(function () {
+
+        var provider_game_id = $(this).val();
+
+        $("#change_image-list").empty();
+        $.getJSON("/_game_image_search_online?provider_game_id=" + provider_game_id, function(data){
+             $.each(data, function(i, record) {
+                $('#change_image-list').append('<li><img class="change_image-image" src="' + record.thumbUrl + '"/></li>');
+             });
+        });
+
+     });
+     $(document).on("click", ".change_image-image",function() {
+        console.log( $(this).prop('src') );
+     });
+
 
     /* Online Searching - Update item using selected item*/
     $("#onlineSearchUpdateBtn").click(function() {
