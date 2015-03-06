@@ -114,6 +114,21 @@ function setGetParameter_andGo(paramName, paramValue, url_to_change)
         online_search(searchString, searchProvider, searchResult_DDL);
      });
 
+     /* click the cloud search button on games list tables */
+     $(".game_table_online_search-btn").click(function() {
+
+        var gameID = $(this).closest('tr').attr('id');
+        var gameName = $(this).closest('tr').find('.gameName').text();
+        var searchProvider = $('#find_online_metadata-Providers').val();
+        $('#find_online_metadata-GameID').val(gameID);
+        $('#find_online_metadata-String').val(gameName);
+        $('#find_online_metadata-dialog').modal('show');
+
+
+        online_search(gameName, searchProvider, $('#find_online_metadata-Result') );
+
+     });
+
 
      /* Online Image Searching */
      $("#change_image-Result").change(function () {
@@ -134,16 +149,16 @@ function setGetParameter_andGo(paramName, paramValue, url_to_change)
 
 
     /* Online Searching - Update item using selected item*/
-    $("#onlineSearchUpdateBtn").click(function() {
-        $("#onlineSearch_loading_div").show();
-        var provider =  $("#onlineSearchProvider").val();
-        var provider_game_id =  $("#onlineSearchResult").val();
-        var game_id = $("#onlineSearchGameID").val();
+    $("#find_online_metadata-Update_Btn").click(function() {
+        $("#find_online_metadata-loading_div").show();
+        var provider =  $("#find_online_metadata-Providers").val();
+        var provider_game_id =  $("#find_online_metadata-Result").val();
+        var game_id = $("#find_online_metadata-GameID").val();
         $.getJSON("/_update_from_online/game/" + game_id + "?provider=" + provider + "&provider_game_id=" + provider_game_id ,function(data){
             if (data.status == 'complete'){
 
-                $("#onlineSearch_loading_div").hide();
-                $('#online_search-dialog').modal('hide');
+                $("#find_online_metadata-loading_div").hide();
+                $('#find_online_metadata-dialog').modal('hide');
                 window.location.reload(true);
             }
         });

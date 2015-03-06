@@ -12,5 +12,5 @@ description = 'arcadia admin',
 author = 'Me',
 author_email = 'me@me.com',
 options = {'build_exe': {'packages':packages,'includes':includes,'excludes':excludes,'include_files':includefiles}}, 
-executables = [Executable('arcadia_admin.py')], requires=['flask', 'requests', 'wtforms']
+executables = [Executable('arcadia_admin.py')], requires=['flask', 'requests', 'wtforms', 'SQLAlchemy']
 )
