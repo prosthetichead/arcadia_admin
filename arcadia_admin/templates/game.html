@@ -86,7 +86,7 @@
         var searchString_TXT = $('#change_image-dialog').find('.online_search-string');
         var searchResult_DDL = $('#change_image-dialog').find('.online_search-result');
         var searchProvider = $('#change_image-dialog').find('.online_search-provider').val();
-
+        console.log("set_screenshot_image: " + searchProvider)
         searchString_TXT.val('{{game.name}}');
         online_search('{{game.name}}', searchProvider, searchResult_DDL)
 

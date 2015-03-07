@@ -75,7 +75,7 @@ def search_giantbomb_game(value=" "):
 		return results
 
 	except Exception, e:
-		print "thegamesdb platform choice refresh Error"
+		print e
 
 
 def get_giantbomb_game(online_game_id="6647"):
@@ -108,6 +108,25 @@ def get_giantbomb_game(online_game_id="6647"):
 
 	game = {'name': name, 'genres': genres, 'desc': desc, 'developers': developers, 'publishers': publishers}
 	return game
+
+def get_giantbomb_game_images(online_game_id="33"):
+	url = "http://www.giantbomb.com/api/game/" + str(online_game_id) + "/?api_key=4936b27215c2062d42539597b3732f99541a3223"
+	r = requests.get(url)
+	game_tree = ET.fromstring(r.content)
+	
+
+	images = []
+
+	for images_elem in game_tree.iter('images'):
+		for image_elem in images_elem.iter('image'):
+			imageUrl = image_elem.find('super_url').text
+			thumbUrl = image_elem.find('thumb_url').text
+			description = image_elem.find('tags').text
+			image = {'imageUrl': imageUrl, 'thumbUrl': thumbUrl, 'description': description}
+			
+			images.append(image)
+
+	return images
 
 
 def get_thegamesdb_game_images(online_game_id="6647"):

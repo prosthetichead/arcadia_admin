@@ -26,7 +26,8 @@ def get_order_by(sort='name', order='desc'):
 @app.before_request
 def before_request():
 	# runs before any request
-	print "request"
+	
+	print "\n\n--request--"
 
 
 @app.errorhandler(404)
@@ -355,7 +356,9 @@ def platform_rom_scan_add_all(platform_id):
 @app.route('/_online_search')
 def game_online_search():
 	search_string = request.args.get('search', default=" ")
-	provider = request.args.get('provider', default="thegamedb")
+	provider = request.args.get('provider', default=" ")
+
+	print 'online_search: ' + provider
 
 	if provider == 'thegamedb':
 		result = AccessOnlineDatabases.search_thegamesdb_game(search_string)
@@ -372,8 +375,12 @@ def game_image_search_online():
 	provider_game_id = request.args.get('provider_game_id', default="1")
 	provider = request.args.get('provider', default="thegamedb")
 
+	print "game_image_search: " + provider
+
 	if provider == 'thegamedb':
 		result = AccessOnlineDatabases.get_thegamesdb_game_images(provider_game_id)
+	elif provider == 'giantbomb':
+		result = AccessOnlineDatabases.get_giantbomb_game_images(provider_game_id)
 	else:
 		result = None
 
