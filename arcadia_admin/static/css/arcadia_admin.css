@@ -85,10 +85,12 @@ width: auto;
     display: block;
 }
 
+/* Image upload icon overlay classes */
 .img-wrap {
     position: relative;
     display: inline-block;
     font-size: 0;
+    padding:0 0 20 0;
 
 }
 .img-wrap .load {

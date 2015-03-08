@@ -1,9 +1,10 @@
 from flask import render_template, flash, redirect, request, Response, jsonify, send_from_directory
-from arcadia_admin import app, db, models, AccessOnlineDatabases, ScanRoms, ReadGameList
+from arcadia_admin import app, db, models, AccessOnlineDatabases, ScanRoms, ReadGameList, ImageTools
 from forms import PlatformForm, RegionForm, GameForm, GenreForm
 import os
 import json
 import glob
+import urllib2
 from werkzeug import utils
 from uuid import uuid4
 
@@ -191,6 +192,7 @@ def genre_view(genre_id):
 	return render_template("genre.html", title=page_title, genre=genre, games=games)
 
 
+
 @app.route('/platform/<platform_id>/_load_game_list', methods=['GET', 'POST'])
 def load_game_list(platform_id):
 	if request.method == 'POST':
@@ -200,6 +202,7 @@ def load_game_list(platform_id):
 		filename = str(uuid4())  # utils.secure_filename(f.filename)
 		f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 		return jsonify(result='OK', filename=filename, file_type=file_type)
+
 	elif request.method == 'GET':
 		filename = request.args.get('filename')
 		filename = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -221,6 +224,34 @@ def load_game_list(platform_id):
 		else:
 			readGameList = None
 			return jsonify(status='ended')
+
+
+@app.route('/platform/<platform_id>/_upload_game_file', methods=['POST'])
+def upload_game_file(platform_id):
+	"Upload a game rom file to the platforms rom folder."
+	
+	try:
+		f = request.files['file']
+		platform = models.Platform.query.get_or_404(platform_id)
+
+		file_type = os.path.splitext(utils.secure_filename(f.filename))[1][1:]
+		filename_noExtension = os.path.splitext(utils.secure_filename(f.filename))[0]
+		full_filename = utils.secure_filename(f.filename)
+		
+		if file_type == platform.extension: # is this the file type we are using for roms?
+			if not os.path.exists(platform.roms_path):
+				os.makedirs(platform.roms_path)
+
+			f.save(os.path.join(platform.roms_path, full_filename))
+			game_id = ScanRoms.addGameRom(str(platform.id), filename_noExtension)
+
+			return jsonify(result='OK', file_name=filename_noExtension, file_type=file_type, game_id=game_id)
+
+		else:
+			return jsonify(result='ERROR', file_name=filename_noExtension, file_type=file_type, msg='Wrong file extension for platforms settings. Received ' + file_type + ' should be ' + platform.extension)
+	
+	except Exception, e:
+		return jsonify(result='ERROR', file_name=filename_noExtension, file_type=file_type, msg=str(e))
 
 
 @app.route('/platform/<platform_id>/game/<game_id>/edit', methods=('GET', 'POST'))
@@ -263,9 +294,14 @@ def send_game_image(platform_id, game_id, image_type):
 		image_type_path = os.path.join(platform.images_path, image_type)
 		if os.path.exists(image_type_path):
 			filename = ""
+			
 			for name in glob.glob(os.path.join(image_type_path, game.file_name + '.*')):
 				filename = os.path.basename(name)
-			return send_from_directory(image_type_path, filename)
+
+			if filename != "":
+				return send_from_directory(image_type_path, filename)
+			elif filename == "" and image_type != 'fanart':
+				return app.send_static_file('img/placeholder.jpg')
 
 	return ""
 
@@ -404,4 +440,33 @@ def update_from_online(game_id):
 	elif provider == 'thegamedb':
 		print AccessOnlineDatabases.get_thegamesdb_game_images(provider_game_id)
 
+	return jsonify(status='complete')
+
+@app.route('/_update_image_from_online/game/<game_id>')
+def update_image_from_online(game_id):
+	game = models.Game.query.get_or_404(game_id)
+	image_url = request.args.get('image_url', default=" ")
+	image_type = request.args.get('type', default=" ")
+	original_extention = extension = os.path.splitext(image_url)[1]	
+	
+	path = os.path.join(game.platform.images_path, image_type)
+	#test if directory exists if not create it
+	if not os.path.exists(path):
+		os.makedirs(path)
+	# test if any files exist in the directory with the same file name (any extension)
+	filelist = glob.glob(os.path.join(path, game.file_name + ".*"))
+	for f in filelist:
+	    os.remove(f)
+
+
+	req = urllib2.Request(image_url, headers={'User-Agent' : "arcadia_admin"})
+	f = urllib2.urlopen(req)
+	image_full_path = os.path.join(path, game.file_name + original_extention)
+	with open(image_full_path, "wb") as code:
+		code.write(f.read())
+
+	if ImageTools.is_jpg_progresive(image_full_path):
+		ImageTools.convert_to_jpg(image_full_path)
+
+	
 	return jsonify(status='complete')

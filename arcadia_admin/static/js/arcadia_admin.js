@@ -85,9 +85,17 @@ function setGetParameter_andGo(paramName, paramValue, url_to_change)
         var url = setGetParameter('sort', row_id);
         var url = setGetParameter('order', sort_order, url);
 
-        window.location.href = url;
-    });
+        window.location.href = url;      
+    });               
 
+    function open_find_online_metadata(game_id, searchString){
+        var searchProvider = $('#find_online_metadata-Providers').val();
+        $('#find_online_metadata-GameID').val(game_id);
+        $('#find_online_metadata-String').val(searchString);
+        $('#find_online_metadata-dialog').modal('show');
+
+        online_search(searchString, searchProvider, $('#find_online_metadata-Result') );
+    }
      function online_search(searchString, searchProvider, searchResult_DDL)
      {
         searchString = searchString.replace(/[^a-zA-Z0-9]+/g, ' ')
@@ -113,11 +121,17 @@ function setGetParameter_andGo(paramName, paramValue, url_to_change)
         console.log("online_search-btn: " + searchProvider);
         online_search(searchString, searchProvider, searchResult_DDL);
      });
+     $(".online_search-provider").change(function () {
+        $(this).closest('.form-group').find('.online_search-btn').trigger('click');
+     });
+
+
 
      /* click the cloud search button on games list tables */
      $(".game_table_online_search-btn").click(function() {
 
         var gameID = $(this).closest('tr').attr('id');
+
         var gameName = $(this).closest('tr').find('.gameName').text();
         var searchProvider = $('#find_online_metadata-Providers').val();
         $('#find_online_metadata-GameID').val(gameID);
@@ -137,13 +151,22 @@ function setGetParameter_andGo(paramName, paramValue, url_to_change)
         $("#change_image-list").empty();
         $.getJSON("/_game_image_search_online?provider_game_id=" + provider_game_id + "&provider=" + searchProvider , function(data){
              $.each(data, function(i, record) {
-                $('#change_image-list').append('<li><img class="change_image-image" src="' + record.thumbUrl + '"/></li>');
+                $('#change_image-list').append('<li><img class="change_image-image" data-imageurl="' +  record.imageUrl +  '" src="' + record.thumbUrl + '"/></li>');
              });
         });
-
      });
-     $(document).on("click", ".change_image-image",function() {
-        console.log( $(this).prop('src') );
+
+    $(document).on("click", ".change_image-image",function() {
+        var image_url =  $(this).attr("data-imageurl");
+        var game_id = $('#change_image-GameID').val();
+        var image_type = $('#change_image-type').val();
+        console.log($('#change_image-type').val());
+        $.getJSON("/_update_image_from_online/game/" + game_id + "?image_url=" + image_url + "&type=" + image_type, function(data){
+            if (data.status == 'complete'){ 
+                $('#find_online_metadata-dialog').modal('hide');
+                window.location.reload(true);
+            } 
+        });
      });
 
 

@@ -4,6 +4,19 @@ import glob
 import os
 import hashlib
 
+
+def addGameRom(platform_id, file_name):
+	game_id = hashlib.md5(platform_id + file_name.lower()).hexdigest()
+	game = models.Game.query.get(game_id)
+	if game is None:
+		game = models.Game(file_name=file_name, id=game_id, name=file_name, active=True, platform_id=platform_id)
+		db.session.add(game)
+		db.session.commit()
+
+	# All done return the game id 
+	return game_id
+
+
 class ScanRomsAvailable(Thread):
 
 	total_games_count = 0
@@ -51,9 +64,5 @@ class ScanRomsAddAll(Thread):
 	def run(self):
 		for f in self.file_names:
 			self.games_processed_count += 1
-			game_id = hashlib.md5(self.platform_id + f.lower()).hexdigest()
-			game = models.Game.query.get(game_id)
-			if game is None:
-				game = models.Game(file_name=f, id=game_id, name=f, active=True, platform_id=self.platform_id)
-				db.session.add(game)
-				db.session.commit()
+			addGameRom(self.platform_id, f)
+
