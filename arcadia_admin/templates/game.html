@@ -4,7 +4,6 @@
 {% block breadcrumb %}
      <ol class="breadcrumb ">
          <li><a href="/">Home</a></li>
-         <li><a href="/platform">Platform</a></li>
          <li><a href="/platform/{{platform.id}}">{{platform.name}}</a></li>
          <li class="active">{{game.name}}</li>
      </ol>
@@ -60,7 +59,7 @@
                     <div class="panel-body" style="text-align:center">
                         <div class="img-wrap" style="width: 90%;">
                             <video width="100%"  preload="none" controls poster="{{game.id}}/img/screen">
-                                <source src="{{game.id}}/vid" type="video/mp4">
+                                <source src="{{game.id}}/vid">
                                 Your browser does not support the video tag.
                             </video>
                             <span id="set_video_image" class="load glyphicon glyphicon-upload"  data-toggle="tooltip" data-placement="left" title="Set Video"></span>

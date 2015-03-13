@@ -1,0 +1,283 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+
+{% block scripts %}
+<script>
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
+function rom_scan(){
+    $.getJSON("{{ platform.id }}/_rom_scan",function(data){
+         $('#romScan_text').text("Activating all available roms");
+         $("#rom_scan-dialog").modal("show");
+        if (data.status == 'running') {
+            var percentage = (data.games_processed / data.total_games) * 100;
+            $("#progressBar").css("width", percentage + "%");
+            $("#progressBar_text").text(data.games_processed + " of " + data.total_games + " Roms Scaned ");
+            setTimeout("rom_scan()",1000);
+        } 
+        else{
+            $("#progressBar_text").text("Complete");
+            $("#progressBar").css("width", 0);
+            $('#rom_scan-dialog').modal('hide');
+            location.reload(true);
+        }; 
+    }); 
+}
+
+function rom_scan_add_all(){
+    $.getJSON("{{ platform.id }}/_rom_scan_add_all",function(data){
+         $('#romScan_text').text("Scanning all roms and adding them.");
+         $("#rom_scan-dialog").modal("show");
+        if (data.status == 'running') {
+            var percentage = (data.games_processed / data.total_games) * 100;
+            $("#progressBar").css("width", percentage + "%");
+            $("#progressBar_text").text(data.games_processed + " of " + data.total_games + " Roms Scaned ");
+            setTimeout("rom_scan_add_all()",1000);
+        }
+        else{
+            $("#progressBar_text").text("Complete");
+            $("#progressBar").css("width", 0);
+            $('#rom_scan-dialog').modal('hide');
+            location.reload(true);
+        };
+    });
+}
+
+function add_game_rom_manually() {
+    $("#game_upload-dialog").modal("show");
+}
+
+function import_rom_xml() {
+    $("#import_rom_xml-dialog").modal("show");
+}
+
+//update file browser text box
+$(document).ready( function() {
+    $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+        $(this).closest('.input-group').find(".upload_text").val(label);
+    });
+});
+
+$(function() {
+    $('#game_upload-upload_btn').click(function() {
+        var form_data = new FormData($('#game_upload-form')[0]);
+        $.ajax({
+            type: 'POST',
+            url: '/platform/{{ platform.id }}/_upload_game_file',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(data) {
+                if (data.result == 'OK') {
+                  var game_id = data.game_id;
+                  var filename = data.file_name;
+
+                  $("#game_upload-dialog").modal("hide");
+                  open_find_online_metadata(game_id, filename)
+
+                }
+                else {
+                    console.log('error ' + data.msg);   
+                };
+            },
+        });
+    });
+});
+
+$(function() {
+    $('#import_rom_xml-upload-btn').click(function() {
+        console.log($('#import_rom_xml-upload-form')[0])
+        var form_data = new FormData($('#import_rom_xml-upload-form')[0]);
+        $.ajax({
+            type: 'POST',
+            url: '/platform/{{ platform.id }}/_load_game_list',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(data) {
+                if (data.result == 'OK') {
+                  load_game_list(data.filename, data.file_type);
+                };
+            },
+        });
+    });
+});
+
+    function load_game_list(filename, file_type) {
+        var p = { filename:filename, file_type:file_type };
+        var params = jQuery.param( p );
+        $.getJSON("/platform/{{ platform.id }}/_load_game_list?" + params, function(data){
+            if (data.status == 'running') {
+                console.log(data.status);
+                var percentage = (data.games_processed_count / data.total_games_count) * 100;
+                $("#import_rom_xml-progressBar").css("width", percentage + "%");
+                setTimeout(function() { load_game_list(filename, file_type); }, 1000)
+            }
+            else{
+                location.reload(true);
+            };
+        });
+    }
+
+
+
+</script>
+{% endblock %}
+
+{% block nav_left %}
+<ul class="nav navbar-nav">
+    <li><a href="{{platform.id}}/edit">Edit Platform</a> </li>
+
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Platform Options<span class="caret"></span></a>
+        <ul class="dropdown-menu" role="menu">
+            <li> <a onclick="rom_scan()" href="javascript:void(0);">Scan For Available Games</a></li>
+            <li class="divider"></li>
+            <li> <a onclick="add_game_rom_manually()" href="javascript:void(0);">Add New Rom File Manually</a></li>
+            <li class="divider"></li>
+            <li> <a onclick="import_rom_xml()" href="javascript:void(0);" data-toggle="tooltip" data-placement="right" data-container="body" title="Good for systems you want to know what games are missing or rom file names are NOT the same as game names">Import Game Information from XML</a></li>
+            <li> <a onclick="rom_scan_add_all()" href="javascript:void(0);" data-toggle="tooltip" data-placement="right" data-container="body" title="Good for systems you do not want every game or rom file names are the same as game names">Import Game Information from Rom Folder</a></li>
+
+            <li> <a href="javascript:void(0);" onclick="delete_game('__ALL', '{{platform.id}}');">Clear all game information</a></li>
+        </ul>
+    </li>
+
+</ul>
+{% endblock %}
+
+
+{% block breadcrumb %}
+     <ol class="breadcrumb ">
+       <li><a href="/">Home</a></li>
+       <li><a href="/platform">Platform</a></li>
+       <li class="active">{{platform.name}}</li>
+     </ol>
+{% endblock %}
+
+{% block content %}
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="panel panel-default">
+                <div class="panel-heading"><a data-toggle="collapse" data-parent="#accordion" href="#platform_panel">{{platform.name}} Platform Details</a></div>
+                    <div id="platform_panel" class="panel-collapse collapse out">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-4"><p><strong>Platform ID</strong> {{platform.id}}</p></div>
+                            <div class="col-md-8"><p><strong>Description</strong></p><div style="text-align: justify; text-justify: inter-word;">{{platform.desc | nl2br}}</div> </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"><p><strong>Alias</strong> {{platform.alias}}</p></div>
+
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">.col-xs-6</div>
+        </div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">{{ macros.render_pagination(games)|safe }}</div>
+  <div class="panel-body">
+    {{ macros.render_game_table(games)|safe }}
+  </div>
+  <div class="panel-footer">{{ macros.render_pagination(games)|safe }}</div>
+</div>
+
+
+
+<div class="modal fade" id="rom_scan-dialog" tabindex="-1" role="dialog" aria-labelledby="rom_scan-label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="rom_scan-label">Scan Roms</h4>
+      </div>
+      <div id="romScan_body" class="modal-body">
+        <p><span id="romScan_text"> Scanning roms directory for changes </span> <br /> " {{ platform.roms_path }} "</p>
+        <div class="progress progress-striped active">
+            <div id="progressBar" class="progress-bar" style="width: 0%">
+                <span id="progressBar_text"></span>
+            </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="game_upload-dialog" tabindex="-1" role="dialog" aria-labelledby="rom_scan-label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="game_upload-label">Manualy New Rom File</h4>
+        </div>
+        <div id="game_upload-body" class="modal-body">
+
+            <form id="game_upload-form" role="form" action="sendXML" method="post" enctype="multipart/form-data">
+                <div class="input-group">
+                        <input type="text" id="game_upload-upload_text" class="form-control upload_text" readonly placeholder="Choose Rom File">
+                        <div class="input-group-btn">
+                            <span class="btn btn-primary btn-file" style="height: 40px; margin-top: 0px; margin-left: 0px; text-shadow: 1px 1px black;">
+                                Browse For Rom File <input type="file" name="file">
+                            </span>
+                        </div>
+
+                </div>
+            </form>
+
+        </div>
+        <div class="modal-footer">
+            <button id="game_upload-upload_btn" type="button" class="btn btn-primary" value="Upload">Add Rom File</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="import_rom_xml-dialog" tabindex="-1" role="dialog" aria-labelledby="import_rom_xml-label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="import_rom_xml-label">Import Game Information from XML</h4>
+      </div>
+      <div class="modal-body">
+          <p>Import game information from a generic XML files and HyperSpin XML database files</p>
+        <form id="import_rom_xml-upload-form" role="form" action="sendXML" method="post" enctype="multipart/form-data">
+            <div class="input-group">
+                    <input type="text" id="import_rom_xml-upload_text" class="form-control upload_text" readonly placeholder="Choose XML file">
+                    <div class="input-group-btn">
+                        <span class="btn btn-primary btn-file" style="height: 40px; margin-top: 0px; margin-left: 0px; text-shadow: 1px 1px black;">
+                            Browse <input type="file" name="file" accept="application/xml">
+                        </span>
+                    </div>
+            </div>
+            <input type="checkbox" text=""> Update Only
+        </form>
+            <div class="progress progress-striped active">
+                <div id="import_rom_xml-progressBar" class="progress-bar" style="width: 0%">
+                    <span id="import_rom_xml-progressBar_text">Place Holder Text</span>
+                </div>
+            </div>
+
+      </div>
+        <div class="modal-footer">
+            <button id="import_rom_xml-upload-btn" type="button" class="btn btn-primary" value="Upload">Upload</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}

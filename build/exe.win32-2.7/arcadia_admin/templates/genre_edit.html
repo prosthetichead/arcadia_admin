@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block breadcrumb %}
+     <ol class="breadcrumb ">
+         <li><a href="/">Home</a></li>
+         <li><a href="/genre">Genre</a></li>
+         {% if genre.id is not none %}
+            <li><a href="/genre/{{genre.id}}">{{genre.name}}</a></li>
+            <li class="active">Edit Region</li>
+         {% else %}
+            <li class="active">New Region</li>
+         {% endif %}
+     </ol>
+{% endblock %}
+
+{% block content %}
+
+<h3>Genre {{ genre.name }} </h3>
+  <form class="form-horizontal" action="" method="post" name="platform" >
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+          <div class="col-sm-3 text-right "><p class="form-control-static"><b>Region ID</b></p></div>
+          <div class="col-sm-5">
+          <p class="form-control-static">{% if genre.id is not none %} {{genre.id}} {% else %} New Region {% endif %} </p>
+              </div>
+      </div>
+      <div class="form-group">
+          <div class="col-sm-3 text-right "><p class="form-control-static"><b>Name</b></p></div>
+          <div class="col-sm-5">
+            {% set f = form.name.process_data( genre.name ) %}
+            {{ form.name(size=80, maxlength=255, class_='form-control' ) }}
+          </div>
+      </div>
+      <div class="form-group">
+          <div class="col-sm-3 text-right "><p class="form-control-static"><b>Alternative Names</b></p></div>
+          <div class="col-sm-5">
+            {% set f = form.alt_names.process_data( genre.alt_names ) %}
+            {{ form.alt_names(size=80, maxlength=4000, class_='form-control' ) }}
+              <small>Write alt names in double quotes. Used to avoid redundant genres. Eg. Genre "Shooter" may have an alternative name "Shoot-em-up"</small>
+          </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-5" style="text-align:right;">
+            <input type="submit" name="btn" value="Save" class="btn btn-primary "> <a href='/genre' class="btn btn-danger">Cancel</a>
+        </div>
+      </div>
+  </form>
+
+{% endblock %}

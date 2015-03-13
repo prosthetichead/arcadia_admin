@@ -5,6 +5,7 @@ import os
 import json
 import glob
 import urllib2
+import random
 from werkzeug import utils
 from uuid import uuid4
 
@@ -27,8 +28,7 @@ def get_order_by(sort='name', order='desc'):
 @app.before_request
 def before_request():
 	# runs before any request
-	
-	print "\n\n--request--"
+	print "--request--"
 
 
 @app.errorhandler(404)
@@ -38,14 +38,18 @@ def page_not_found(e):
 
 @app.route('/')
 @app.route('/index')
-def home():
-	return render_template("index.html", title="Home")
-
-
 @app.route('/platform')
-def platform_view_all():
+def home():
 	platforms = models.Platform.query.all()
-	return render_template("platforms.html", title="All Platforms", platforms=platforms)
+	games = models.Game.query.all()
+
+	if db.session.query(models.Game).count() > 0:
+		rand = random.randrange(0, db.session.query(models.Game).count())
+		rgame = db.session.query(models.Game)[rand]
+	else:
+		rgame = None
+	return render_template("index.html", platforms=platforms, games=games, rgame=rgame, title="Home")
+
 
 
 @app.route('/region')
@@ -228,7 +232,7 @@ def load_game_list(platform_id):
 
 @app.route('/platform/<platform_id>/_upload_game_file', methods=['POST'])
 def upload_game_file(platform_id):
-	"Upload a game rom file to the platforms rom folder."
+	"""Upload a game rom file to the platforms rom folder."""
 	
 	try:
 		f = request.files['file']
@@ -470,3 +474,7 @@ def update_image_from_online(game_id):
 
 	
 	return jsonify(status='complete')
+
+@app.route('/controls')
+def settings_inputs():
+	return render_template("settings_controls.html", title="Arcadia Controls")

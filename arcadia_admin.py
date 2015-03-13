@@ -1,10 +1,17 @@
 #!flask/bin/python
 from arcadia_admin import app, db
+from cherrypy import wsgiserver
 
-##create the database if we need it
 db.create_all()
 
-#start the server
 app.run(debug=True, host='0.0.0.0')
 
-#clean up after server finished
+
+d = wsgiserver.WSGIPathInfoDispatcher({'/': app})
+server = wsgiserver.CherryPyWSGIServer(('0.0.0.0', 8080), d)
+
+if __name__ == '__main__':
+	try:
+		server.start()
+	except KeyboardInterrupt:
+		server.stop()

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block breadcrumb %}
+     <ol class="breadcrumb ">
+         <li><a href="/">Home</a></li>
+         <li><a href="/region">Region</a></li>
+         {% if region.id is not none %}
+            <li><a href="/region/{{region.id}}">{{region.region_name}}</a></li>
+            <li class="active">Edit Region</li>
+         {% else %}
+            <li class="active">New Region</li>
+         {% endif %}
+     </ol>
+{% endblock %}
+
+{% block content %}
+
+<h3>Region {{ region.name }} </h3>
+  <form class="form-horizontal" action="" method="post" name="platform" >
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+          <div class="col-sm-3 text-right "><p class="form-control-static"><b>Region ID</b></p></div>
+          <div class="col-sm-5">
+          <p class="form-control-static">{% if region.id is not none %} {{region.id}} {% else %} New Region {% endif %} </p>
+              </div>
+      </div>
+      <div class="form-group">
+          <div class="col-sm-3 text-right "><p class="form-control-static"><b>Name</b></p></div>
+          <div class="col-sm-5">
+            {% set f = form.name.process_data( region.name ) %}
+            {{ form.name(size=80, maxlength=255, class_='form-control' ) }}
+          </div>
+      </div>
+      <div class="form-group">
+          <div class="col-sm-3 text-right "><p class="form-control-static"><b>Abbreviation</b></p></div>
+          <div class="col-sm-5">
+            {% set f = form.abbreviation.process_data( region.abbreviation ) %}
+            {{ form.abbreviation(size=80, maxlength=10, class_='form-control' ) }}
+          </div>
+      </div>
+      <div class="form-group">
+          <div class="col-sm-3 text-right "><p class="form-control-static"><b>Alternative Names</b></p></div>
+          <div class="col-sm-5">
+            {% set f = form.alt_names.process_data( region.alt_names ) %}
+            {{ form.alt_names(size=80, maxlength=4000, class_='form-control' ) }}
+              <small>Write alt names in double quotes. Used to avoid redundant regions. Eg. Region "Australia" may have an alternative name "Aust"</small>
+          </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-5" style="text-align:right;">
+            <input type="submit" name="btn" value="Save" class="btn btn-primary "> <a href='/region' class="btn btn-danger">Cancel</a>
+        </div>
+      </div>
+  </form>
+
+{% endblock %}

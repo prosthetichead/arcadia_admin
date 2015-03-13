@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="panel panel-default">
+                <div class="panel-heading">Platforms</a></div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-xs-6 text-center"><a class="btn btn-primary btn-lg" href="/platform" role="button">Platforms</a></div>
+                            <div class="col-xs-6 text-center"><a class="btn btn-primary btn-lg" href="#" role="button">Add New Platform</a></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6"> <div class="panel panel-default">
+                <div class="panel-heading">Games</a></div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-xs-6 text-center"><a class="btn btn-primary btn-lg" href="#" role="button">View All Platforms</a></div>
+                            <div class="col-xs-6 text-center"><a class="btn btn-primary btn-lg" href="#" role="button">Add New Platform</a></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+test
+            </div>
+
+
+    {% for platform in platforms %}
+    <p>
+      {{ platform.name }} <b>{{ platform.id }}</b>
+    </p>
+    {% endfor %}
+{% endblock %}
