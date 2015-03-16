@@ -51,7 +51,6 @@ def home():
 	return render_template("index.html", platforms=platforms, games=games, rgame=rgame, title="Home")
 
 
-
 @app.route('/region')
 def regions_view_all():
 	regions = models.Region.query.all()
@@ -130,7 +129,7 @@ def platform_edit_form(platform_id):
 		platform.desc = form.desc.data
 		platform.active = form.active.data
 		platform.alias = form.alias.data
-		platform.icon_id = form.icon.data
+		platform.icon = form.icon.data.upper()
 		platform.extension = form.rom_extension.data
 		platform.roms_path = form.roms_path.data
 		platform.images_path = form.images_path.data
@@ -138,9 +137,12 @@ def platform_edit_form(platform_id):
 
 		db.session.add(platform)
 		db.session.commit()
-		flash('platform "%s" updated' % (form.name.data))
+		#flash('platform "%s" updated' % (form.name.data))
 
 		return redirect('/platform')
+	elif platform.icon is not None:
+		form.icon.data = platform.icon
+
 
 	return render_template('platform_edit.html',
 						   title='Platform Edit ' + str(platform.name),
@@ -196,7 +198,6 @@ def genre_view(genre_id):
 	return render_template("genre.html", title=page_title, genre=genre, games=games)
 
 
-
 @app.route('/platform/<platform_id>/_load_game_list', methods=['GET', 'POST'])
 def load_game_list(platform_id):
 	if request.method == 'POST':
@@ -233,7 +234,7 @@ def load_game_list(platform_id):
 @app.route('/platform/<platform_id>/_upload_game_file', methods=['POST'])
 def upload_game_file(platform_id):
 	"""Upload a game rom file to the platforms rom folder."""
-	
+
 	try:
 		f = request.files['file']
 		platform = models.Platform.query.get_or_404(platform_id)
@@ -241,8 +242,8 @@ def upload_game_file(platform_id):
 		file_type = os.path.splitext(utils.secure_filename(f.filename))[1][1:]
 		filename_noExtension = os.path.splitext(utils.secure_filename(f.filename))[0]
 		full_filename = utils.secure_filename(f.filename)
-		
-		if file_type == platform.extension: # is this the file type we are using for roms?
+
+		if file_type == platform.extension:  # is this the file type we are using for roms?
 			if not os.path.exists(platform.roms_path):
 				os.makedirs(platform.roms_path)
 
@@ -252,8 +253,9 @@ def upload_game_file(platform_id):
 			return jsonify(result='OK', file_name=filename_noExtension, file_type=file_type, game_id=game_id)
 
 		else:
-			return jsonify(result='ERROR', file_name=filename_noExtension, file_type=file_type, msg='Wrong file extension for platforms settings. Received ' + file_type + ' should be ' + platform.extension)
-	
+			return jsonify(result='ERROR', file_name=filename_noExtension, file_type=file_type,
+						   msg='Wrong file extension for platforms settings. Received ' + file_type + ' should be ' + platform.extension)
+
 	except Exception, e:
 		return jsonify(result='ERROR', file_name=filename_noExtension, file_type=file_type, msg=str(e))
 
@@ -265,7 +267,6 @@ def game_edit(platform_id, game_id):
 
 	form.genres.choices = models.Genre.query.with_entities(models.Genre.id, models.Genre.name) \
 		.order_by(models.Genre.name.asc())
-
 
 	if game_id is not None:  # get existing platform data and fill in the boxes
 		game = models.Game.query.get_or_404(game_id)
@@ -285,7 +286,6 @@ def game_edit(platform_id, game_id):
 		form.genres.default = game.id_genres
 		form.process()
 
-
 	return render_template("game_edit.html", title="Game Edit", platform=platform, game=game, form=form)
 
 
@@ -298,7 +298,7 @@ def send_game_image(platform_id, game_id, image_type):
 		image_type_path = os.path.join(platform.images_path, image_type)
 		if os.path.exists(image_type_path):
 			filename = ""
-			
+
 			for name in glob.glob(os.path.join(image_type_path, game.file_name + '.*')):
 				filename = os.path.basename(name)
 
@@ -324,6 +324,7 @@ def send_game_video(platform_id, game_id):
 			return send_from_directory(platform.videos_path, filename)
 
 	return ""
+
 
 @app.route('/platform/<platform_id>/game/<game_id>')
 def game_view(platform_id, game_id):
@@ -426,6 +427,7 @@ def game_image_search_online():
 
 	return Response(json.dumps(result), mimetype='application/json')
 
+
 @app.route('/_update_from_online/game/<game_id>')
 def update_from_online(game_id):
 	provider_game_id = request.args.get('provider_game_id', default="0")
@@ -446,24 +448,50 @@ def update_from_online(game_id):
 
 	return jsonify(status='complete')
 
+
+@app.route('/_assets/<asset_type>')
+def get_assets_list(asset_type):
+	assets_path = app.config['ASSETS_FOLDER']
+	assets_path = os.path.join(assets_path, asset_type)
+	if os.path.exists(assets_path):
+		filelist = glob.glob(os.path.join(assets_path, "*.png"))
+		asset_details = []
+		for file_name in filelist:
+
+			file_name = os.path.basename(file_name)
+			file_name, extension = os.path.splitext(file_name)
+			asset_details.append({'file_name': file_name, 'asset_url': '/_assets/' + asset_type + '/' + file_name, 'extension': extension})
+
+		return Response(json.dumps(asset_details), mimetype='application/json')
+
+	return jsonify(status='error', assets_path=assets_path)
+
+
+@app.route('/_assets/<asset_type>/<asset_file_name>')
+def get_asset(asset_type, asset_file_name):
+	asset_path = os.path.join(app.config['ASSETS_FOLDER'], asset_type)
+	if asset_type.lower() == 'icons':
+		return send_from_directory(asset_path, asset_file_name + '.png')
+
+
+
 @app.route('/_update_image_from_online/game/<game_id>')
 def update_image_from_online(game_id):
 	game = models.Game.query.get_or_404(game_id)
 	image_url = request.args.get('image_url', default=" ")
 	image_type = request.args.get('type', default=" ")
-	original_extention = extension = os.path.splitext(image_url)[1]	
-	
+	original_extention = extension = os.path.splitext(image_url)[1]
+
 	path = os.path.join(game.platform.images_path, image_type)
-	#test if directory exists if not create it
+	# test if directory exists if not create it
 	if not os.path.exists(path):
 		os.makedirs(path)
 	# test if any files exist in the directory with the same file name (any extension)
 	filelist = glob.glob(os.path.join(path, game.file_name + ".*"))
 	for f in filelist:
-	    os.remove(f)
+		os.remove(f)
 
-
-	req = urllib2.Request(image_url, headers={'User-Agent' : "arcadia_admin"})
+	req = urllib2.Request(image_url, headers={'User-Agent': "arcadia_admin"})
 	f = urllib2.urlopen(req)
 	image_full_path = os.path.join(path, game.file_name + original_extention)
 	with open(image_full_path, "wb") as code:
@@ -472,8 +500,8 @@ def update_image_from_online(game_id):
 	if ImageTools.is_jpg_progresive(image_full_path):
 		ImageTools.convert_to_jpg(image_full_path)
 
-	
 	return jsonify(status='complete')
+
 
 @app.route('/controls')
 def settings_inputs():

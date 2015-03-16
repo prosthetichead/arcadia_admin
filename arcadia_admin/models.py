@@ -13,7 +13,7 @@ class Platform(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	#giantbomb_id = db.Column(db.String(255))
 	#gamedb_id = db.Column(db.String(255))
-	icon_id = db.Column(db.String(255))
+	icon = db.Column(db.String(4000))
 	name = db.Column(db.String(255))
 	desc = db.Column(db.String(4000))
 	alias = db.Column(db.String(255))
@@ -215,7 +215,7 @@ class Company(db.Model):
 class Filter(db.Model):
 	__tablename__ = 'filters'	
 	name = db.Column(db.String(100), primary_key=True)
-	icon_id = db.Column(db.String(255))
+	icon = db.Column(db.String(4000))
 	filter_string = db.Column(db.Text)
 
 	def __repr__(self):

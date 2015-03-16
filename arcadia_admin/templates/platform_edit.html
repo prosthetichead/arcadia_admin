@@ -12,27 +12,33 @@
 
 {% block content %}
 <div class="container">
-    <h3>Platform {{ platform.name }} </h3>
+
     <form class="form-horizontal" action="" method="post" name="platform" >
         {{ form.hidden_tag() }}
 
-        <div class="form-group">
-            <label class="col-sm-3 control-label">Platform ID </label>
-            <div class="col-sm-9">
-                <p class="form-control-static">{% if platform.id == 'None' %} {{platform.id}} {% else %} New Platform {% endif %} </p>
-            </div>
+        <div class="row">
+            <div class="col-sm-1">
+            <div id="icon_image">  </div>
+            <button id="set_icon_asset" type="button" class="btn btn-primary btn-xs" style="width: 64px" value="Upload">Set Icon</button>
         </div>
 
-      <div class="form-group">
-      <label for="active" class="col-sm-3 control-label">Platform Active?</label>
-        <div class="col-sm-5">
-            <div class="checkbox">
-                <label >
-                    {% set f = form.active.process_data( platform.active ) %} {{ form.active() }} Active
-                </label>
-            </div>
+           <div class="col-sm-4"> <h3>Platform {{ platform.name }} </h3> </div>
+            <div class="col-sm-4">
+                            <div class="checkbox">
+
+{% set f = form.active.process_data( platform.active ) %} {{ form.active() }} Platform Active
+
+            </div> </div>
         </div>
-      </div>
+
+        <div class="row">
+
+        </div>
+
+        <div class="col-sm-1">
+
+        </div>
+
 
         <div class="form-group">
             <div class="col-sm-5">
@@ -54,12 +60,6 @@
         </div>
 
 
-      <div class="form-group">
-          <label for="icon_id" class="col-sm-3 control-label">Icon File</label>
-          <div class="col-sm-5">
-            {% set f = form.icon.process_data( platform.icon_id ) %} {{ form.icon( class_='form-control') }}
-          </div>
-      </div>
       <div class="form-group">
           <label for="rom_extension" class="col-sm-3 control-label">Rom File Extension</label>
           <div class="col-sm-5">
@@ -114,15 +114,55 @@
       </div>
 
   </form>
-
-
 </div>
+
+
+
+
+<div class="modal fade" id="assets_image-dialog" tabindex="-1" role="dialog" aria-labelledby="assets_image-label" aria-hidden="true"  >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="assets_image-label">Choose Icon</h4>
+      </div>
+      <div id="assets_image-body" class="modal-body">
+
+        <div class="icon_grid_div">
+            <ul id="assets_image-list">
+
+            </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 
 
 {% block scripts %}
 <script>
+
+$(document).ready(function() {
+    console.log('<img id="icon_img" src="/_assets/icons/' + $('#icon').val() + '"/>');
+    if ( $('#icon').val() != "" )
+        $('#icon_image').html('<img id="icon_img" src="/_assets/icons/' + $('#icon').val() + '"/>');
+});
+
+$('#icon').change(function(){
+    if ( $('#icon').val() != "" )
+        $('#icon_image').html('<img id="icon_img" src="/_assets/icons/' + $('#icon').val() + '"/>');
+});
+
+$("#set_icon_asset").click(function() {
+
+    open_image_asset_modal('icons');
+
+});
+
 
 </script>
 {% endblock %}

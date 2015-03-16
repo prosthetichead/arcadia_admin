@@ -24,7 +24,7 @@
             <td>{{platform.id}}</td>
             <td><a href="/platform/{{platform.id}}">{{platform.name}}</a></td>
             <td> {{ platform.games_active.count() }} of {{ platform.games.count() }} </td>
-            </tr>
+        </tr>
     {% endfor %}
     </table>
 {% endblock %}

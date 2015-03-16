@@ -70,6 +70,27 @@ function setGetParameter_andGo(paramName, paramValue, url_to_change)
     window.location.href = address;
 }
 
+
+function open_image_asset_modal(type) {
+    $.getJSON("/_assets/" + type ,function(data){
+        $.each(data, function(i, record) {
+            $('#assets_image-list').append('<li><img class="asset_image-img" data-imageFileName="' +  record.file_name +  '" src="' + record.asset_url + '"/></li>');
+        });
+
+    $('#assets_image-dialog').modal('show');
+    });
+}
+
+
+$(document).on("click", ".asset_image-img",function() {
+
+    var file_name = $(this).attr("data-imageFileName");
+    $('#icon').val(file_name).trigger('change');
+
+    $('#assets_image-dialog').modal('hide');
+});
+
+
 /*
 *   Changes the sort order by sending Parameter in the url
 */

@@ -11,3 +11,4 @@ WTF_CSRF_ENABLED = True
 SECRET_KEY = 'you-might-guess-if-you-are-lucky'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'arcadia.db')
 UPLOAD_FOLDER = os.path.join(basedir, 'arcadia_admin/uploads')
+ASSETS_FOLDER = os.path.join(basedir, 'assets')

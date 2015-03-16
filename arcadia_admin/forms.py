@@ -1,12 +1,12 @@
 from flask_wtf import Form
-from wtforms.fields import StringField, BooleanField, TextAreaField, IntegerField, SelectField, FileField, SelectMultipleField
+from wtforms.fields import StringField, BooleanField, TextAreaField, IntegerField, SelectField, FileField, SelectMultipleField, HiddenField
 from wtforms.validators import DataRequired
 
 
 class PlatformForm(Form):
 	name = StringField('Platform Name', validators=[DataRequired()])
 	desc = TextAreaField('Description')
-	icon = StringField('Icon File')
+	icon = HiddenField('Icon File', default='Default_Platform', validators=[DataRequired()])
 	alias = StringField('Alias')
 	emu_path = StringField('Emulator Path')
 	roms_path = StringField('Roms Path')
