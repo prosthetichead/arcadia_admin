@@ -1,0 +1,17 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="panel panel-default">
+  <div class="panel-body">
+        {% for row in filter_result %}
+            {{ row.name }} <br />
+            {{ row.id }} <br />
+            <br />
+        {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

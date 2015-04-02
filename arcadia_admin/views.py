@@ -134,6 +134,8 @@ def platform_edit_form(platform_id):
 		platform.roms_path = form.roms_path.data
 		platform.images_path = form.images_path.data
 		platform.videos_path = form.videos_path.data
+		platform.load_string = form.load_string.data
+		platform.emu_path = form.emu_path.data
 
 		db.session.add(platform)
 		db.session.commit()
@@ -506,3 +508,32 @@ def update_image_from_online(game_id):
 @app.route('/controls')
 def settings_inputs():
 	return render_template("settings_controls.html", title="Arcadia Controls")
+
+
+
+@app.route('/filter/<filter_id>')
+def view_filter(filter_id):
+	platform_id = request.args.get('platform_id', default="all")
+
+	filter = models.Filter.query.get_or_404(filter_id)
+	if platform_id != "all":
+		platform_filter = "platforms.id = " + str(platform_id)
+	else:
+		platform_filter = "1=1"
+
+	sql = """select distinct
+				games.name name, games.file_name, platforms.id platform_id, platforms.name platform_name, games.id id
+				from games
+				join platforms on games.platform_id = platforms.id
+				left join game_genres on games.id = game_genres.game_id
+				left join genres on game_genres.genre_id = genres.id
+				left join game_developers on games.id = game_developers.game_id
+				left join companies developers on game_developers.developer_id = developers .id
+				left join game_publishers on games.id = game_publishers.game_id
+				left join companies publishers on game_publishers.publisher_id = publishers.id
+				where games.active = 1
+				and ({0}) and ({1}) order by games.name """.format(platform_filter, filter.filter_string)
+
+	result = db.engine.execute(sql).fetchall()
+
+	return render_template("filter.html", filter_result=result)

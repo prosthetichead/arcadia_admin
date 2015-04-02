@@ -46,7 +46,7 @@ class Game(db.Model):
 	favourite = db.Column(db.Boolean())
 	stars = db.Column(db.Numeric)
 	active = db.Column(db.Boolean())
-	seconds_played = db.Column(db.Integer)
+	seconds_played = db.Column(db.Integer, default=0)
 	last_played = db.Column(db.Date)
 	clone_of = db.Column(db.String(32))
 
@@ -213,8 +213,9 @@ class Company(db.Model):
 
 
 class Filter(db.Model):
-	__tablename__ = 'filters'	
-	name = db.Column(db.String(100), primary_key=True)
+	__tablename__ = 'filters'
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String(100))
 	icon = db.Column(db.String(4000))
 	filter_string = db.Column(db.Text)
 
