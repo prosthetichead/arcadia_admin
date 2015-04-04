@@ -72,6 +72,7 @@ function setGetParameter_andGo(paramName, paramValue, url_to_change)
 
 
 function open_image_asset_modal(type) {
+    $('#assets_image-list').empty();
     $.getJSON("/_assets/" + type ,function(data){
         $.each(data, function(i, record) {
             $('#assets_image-list').append('<li><img class="asset_image-img" data-imageFileName="' +  record.file_name +  '" src="' + record.asset_url + '"/></li>');

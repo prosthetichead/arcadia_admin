@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request, Response, jsonify, send_from_directory
 from arcadia_admin import app, db, models, AccessOnlineDatabases, ScanRoms, ReadGameList, ImageTools
-from forms import PlatformForm, RegionForm, GameForm, GenreForm
+from forms import PlatformForm, RegionForm, GameForm, GenreForm, FilterForm
 import os
 import json
 import glob
@@ -42,13 +42,14 @@ def page_not_found(e):
 def home():
 	platforms = models.Platform.query.all()
 	games = models.Game.query.all()
+	filters = models.Filter.query.all()
 
 	if db.session.query(models.Game).count() > 0:
 		rand = random.randrange(0, db.session.query(models.Game).count())
 		rgame = db.session.query(models.Game)[rand]
 	else:
 		rgame = None
-	return render_template("index.html", platforms=platforms, games=games, rgame=rgame, title="Home")
+	return render_template("index.html", platforms=platforms, games=games, filters=filters,  rgame=rgame, title="Home")
 
 
 @app.route('/region')
@@ -61,6 +62,32 @@ def regions_view_all():
 def genre_view_all():
 	genres = models.Genre.query.all()
 	return render_template("genres.html", title="All Genres", genres=genres)
+
+
+@app.route('/filter/new', defaults={'filter_id': None}, methods=['GET', 'POST'])
+@app.route('/filter/<filter_id>/edit', methods=['GET', 'POST'])
+def filter_edit_form(filter_id):
+	form = FilterForm()
+
+	if filter_id is not None:
+		filter = models.Filter.query.get_or_404(filter_id)
+	else:
+		filter = models.Filter(name='')
+
+	if form.validate_on_submit():
+		filter.name = form.name.data
+		filter.icon = form.icon.data.upper()
+		filter.filter_string = form.filter_string.data
+
+		db.session.add(filter)
+		db.session.commit()
+
+		return redirect('/filter/'+filter_id)
+
+	return render_template('filter_edit.html',
+						   title='Filter Edit ' + str(filter.name),
+						   filter=filter,
+						   form=form)
 
 
 @app.route('/region/new', defaults={'region_id': None}, methods=['GET', 'POST'])
@@ -459,7 +486,7 @@ def get_assets_list(asset_type):
 		filelist = glob.glob(os.path.join(assets_path, "*.png"))
 		asset_details = []
 		for file_name in filelist:
-
+			
 			file_name = os.path.basename(file_name)
 			file_name, extension = os.path.splitext(file_name)
 			asset_details.append({'file_name': file_name, 'asset_url': '/_assets/' + asset_type + '/' + file_name, 'extension': extension})

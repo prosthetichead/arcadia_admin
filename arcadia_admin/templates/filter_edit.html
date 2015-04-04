@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="container">
+
+    <form class="form-horizontal" action="" method="post" name="platform" >
+        {{ form.hidden_tag() }}
+
+        <div class="row">
+            <div class="col-sm-1">
+            	<div id="icon_image">  </div>
+            	<button id="set_icon_asset" type="button" class="btn btn-primary btn-xs" style="width: 64px" value="Upload">Set Icon</button>
+        	</div>
+ 		</div>
+  	</form>
+</div>
+
+
+
+
+
+
+{% endblock %}
+
+
+
+{% block scripts %}
+<script>
+
+$(document).ready(function() {
+    console.log('<img id="icon_img" src="/_assets/icons/' + $('#icon').val() + '"/>');
+    if ( $('#icon').val() != "" )
+        $('#icon_image').html('<img id="icon_img" src="/_assets/icons/' + $('#icon').val() + '"/>');
+});
+
+$('#icon').change(function(){
+    if ( $('#icon').val() != "" )
+        $('#icon_image').html('<img id="icon_img" src="/_assets/icons/' + $('#icon').val() + '"/>');
+});
+
+$("#set_icon_asset").click(function() {
+
+    open_image_asset_modal('icons');
+
+});
+
+
+</script>
+{% endblock %}

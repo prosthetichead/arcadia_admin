@@ -17,6 +17,12 @@ class PlatformForm(Form):
 	active = BooleanField('Platform Active', default=False)
 
 
+class FilterForm(Form):
+	name = StringField('Filter Name', validators=[DataRequired()])
+	filter_string = TextAreaField('Filter String')
+	icon = HiddenField('Icon File', default='Default_Platform', validators=[DataRequired()])
+	
+
 class GameForm(Form):
 	name = StringField('Game Name', validators=[DataRequired()])
 	# filename = StringField('Game Filename', validators=[DataRequired()])
