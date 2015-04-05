@@ -3,20 +3,57 @@
 
 {% block content %}
 <div class="container">
+	<div class="container-fluid">
+		<div class="row-fluid">
+    		<div class="col-sm-7">
+    			<form class="form-horizontal" action="" method="post" name="platform" >
+        			{{ form.hidden_tag() }}
 
-    <form class="form-horizontal" action="" method="post" name="platform" >
-        {{ form.hidden_tag() }}
-
-        <div class="row">
-            <div class="col-sm-1">
-            	<div id="icon_image">  </div>
-            	<button id="set_icon_asset" type="button" class="btn btn-primary btn-xs" style="width: 64px" value="Upload">Set Icon</button>
-        	</div>
- 		</div>
-  	</form>
+        			
+						<div class="form-group">
+            				<div class="col-sm-1">
+            					<div id="icon_image">  </div>
+            					<button id="set_icon_asset" type="button" class="btn btn-primary btn-xs" style="width: 64px" value="Upload">Set Icon</button>
+        					</div>
+ 							<div class="col-sm-offset-1 col-sm-10">	 		 		
+                				<label for="name" class="control-label">Filter Name</label>
+                				{% set f = form.name.process_data( filter.name ) %}
+                				{{ form.name(size=80, maxlength=255, class_='form-control' ) }}
+            				</div>
+        				</div>
+        			
+        				<div class="form-group">
+           					<div class="col-sm-12">
+            	    			<label for="name" class="control-label">Filter String</label>
+            	    			{% set f = form.filter_string.process_data( filter.filter_string ) %}
+            	    			{{ form.filter_string( rows="5", class_='form-control' ) }}
+            				</div>
+        				</div>
+        			
+        			<div class="form-group">
+        				<div class="col-sm-12" style="text-align:right;">
+            				<input type="submit" name="btn" value="Apply" class="btn btn-primary "> <a href='/' class="btn btn-danger">Cancel</a>
+        				</div>
+      				</div>
+  				</form>
+  			</div>
+  			<div class="col-sm-5">
+  					{% if filter_result %}
+    				<h4> Filter Result </h4>
+        			<table class="table table-bordered table-striped table-hover" style="width:100%">
+            			<tr> <th> Name </th> <th>Platform</th> </tr>
+						{% for row in filter_result %}
+            			<tr><td>{{ row.name }}</td> <td>{{row.platform_name}}</td></tr>
+       					{% endfor %}	
+       				</table>
+       				{% else %}
+       					<h4> No Results </h4>
+       				{% endif %}
+    			
+			</div>
+		</div>
+	</div>
 </div>
-
-
 
 
 

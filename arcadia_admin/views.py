@@ -24,6 +24,32 @@ def get_order_by(sort='name', order='desc'):
 		print e
 		return render_template('404.html'), 404
 
+def get_filter_result(filter_id, platform_id='all'):
+
+	try:
+		filter = models.Filter.query.get_or_404(filter_id)
+		if platform_id != "all":
+			platform_filter = "platforms.id = " + str(platform_id)
+		else:
+			platform_filter = "1=1"
+
+		sql = """select distinct
+				games.name name, games.file_name, platforms.id platform_id, platforms.name platform_name, games.id id
+				from games
+				join platforms on games.platform_id = platforms.id
+				left join game_genres on games.id = game_genres.game_id
+				left join genres on game_genres.genre_id = genres.id
+				left join game_developers on games.id = game_developers.game_id
+				left join companies developers on game_developers.developer_id = developers .id
+				left join game_publishers on games.id = game_publishers.game_id
+				left join companies publishers on game_publishers.publisher_id = publishers.id
+				where games.active = 1
+				and ({0}) and ({1}) order by games.name """.format(platform_filter, filter.filter_string)
+
+		return db.engine.execute(sql).fetchall()
+	except Exception, e:
+		return None
+
 
 @app.before_request
 def before_request():
@@ -68,11 +94,14 @@ def genre_view_all():
 @app.route('/filter/<filter_id>/edit', methods=['GET', 'POST'])
 def filter_edit_form(filter_id):
 	form = FilterForm()
+	filter_result = None
 
 	if filter_id is not None:
 		filter = models.Filter.query.get_or_404(filter_id)
+		filter_result = get_filter_result(filter_id, 'all')
 	else:
 		filter = models.Filter(name='')
+		
 
 	if form.validate_on_submit():
 		filter.name = form.name.data
@@ -81,12 +110,15 @@ def filter_edit_form(filter_id):
 
 		db.session.add(filter)
 		db.session.commit()
-
-		return redirect('/filter/'+filter_id)
+		db.session.refresh(filter)
+		return redirect('/filter/'+ str(filter.id) +'/edit')
+	elif filter.icon is not None:
+		form.icon.data = filter.icon
 
 	return render_template('filter_edit.html',
 						   title='Filter Edit ' + str(filter.name),
 						   filter=filter,
+						   filter_result=filter_result,
 						   form=form)
 
 
@@ -486,7 +518,7 @@ def get_assets_list(asset_type):
 		filelist = glob.glob(os.path.join(assets_path, "*.png"))
 		asset_details = []
 		for file_name in filelist:
-			
+
 			file_name = os.path.basename(file_name)
 			file_name, extension = os.path.splitext(file_name)
 			asset_details.append({'file_name': file_name, 'asset_url': '/_assets/' + asset_type + '/' + file_name, 'extension': extension})
