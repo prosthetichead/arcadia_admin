@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 
+{% block nav_left %}
+<ul class="nav navbar-nav">
+    <li><a onclick="delete_item('Filter', '{{filter.id}}')" href="javascript:void(0);"> Delete Filter </a> </li>
+</ul>
+{% endblock %}
+
 {% block content %}
 <div class="container">
 	<div class="container-fluid">

@@ -51,29 +51,29 @@ class Game(db.Model):
 	clone_of = db.Column(db.String(32))
 
 # Region # Getters and Setters
-	def _find_or_create_regions(self, region=' '):
-		q = Region.query.filter((Region.alt_names.like('%"' + region + '"%'))
-								| (db.func.lower(Region.name) == db.func.lower(region))
-								| (db.func.lower(Region.abbreviation) == db.func.lower(region)))
-		r = q.first()
-		if not r:
-			r = Region(name=region, abbreviation=region)
-		return r
-
-	def _get_regions(self):
-		return [x.name for x in self.regions]
-
-	def _set_regions(self, value):
-		# clear the list first
-		while self.regions:
-			del self.regions[0]
-		# add new tags
-		for regions in value:
-			self.regions.append(self._find_or_create_regions(regions))
-
-	str_regions = property(_get_regions,
-							_set_regions,
-							"Property str_region is a simple wrapper for regions relation")
+# 	def _find_or_create_regions(self, region=' '):
+# 		q = Region.query.filter((Region.alt_names.like('%"' + region + '"%'))
+# 								| (db.func.lower(Region.name) == db.func.lower(region))
+# 								| (db.func.lower(Region.abbreviation) == db.func.lower(region)))
+# 		r = q.first()
+# 		if not r:
+# 			r = Region(name=region, abbreviation=region)
+# 		return r
+#
+# 	def _get_regions(self):
+# 		return [x.name for x in self.regions]
+#
+# 	def _set_regions(self, value):
+# 		# clear the list first
+# 		while self.regions:
+# 			del self.regions[0]
+# 		# add new tags
+# 		for regions in value:
+# 			self.regions.append(self._find_or_create_regions(regions))
+#
+# 	str_regions = property(_get_regions,
+# 							_set_regions,
+# 							"Property str_region is a simple wrapper for regions relation")
 
 
 # Genre # Getters and Setters
@@ -168,7 +168,6 @@ class Game(db.Model):
 	id_publishers = property(_get_publishers_id, _set_publishers_id, "Property id_developers is a simple wrapper for developers relation")
 
 
-
 GameGenres = db.Table('game_genres',
 	db.Column('game_id', db.Integer, db.ForeignKey('games.id')),
 	db.Column('genre_id', db.Integer, db.ForeignKey('genres.id'))
@@ -180,20 +179,27 @@ class Genre(db.Model):
 	alt_names = db.Column(db.String(4000))
 	games = db.relationship("Game", secondary=GameGenres, backref="genres", lazy='dynamic')
 
-
-GameRegions = db.Table('game_regions',
+GameGenres = db.Table('game_franchises',
 	db.Column('game_id', db.Integer, db.ForeignKey('games.id')),
-	db.Column('region_id', db.Integer, db.ForeignKey('regions.id'))
+	db.Column('franchise_id', db.Integer, db.ForeignKey('franchises.id'))
 )
-class Region(db.Model):
-	__tablename__ = 'regions'
+class Franchise(db.Model):
+	__tablename__ = 'franchises'
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(255))
-	abbreviation = db.Column(db.String(10))
-	alt_names = db.Column(db.String(4000))
-	games = db.relationship("Game", secondary=GameRegions, backref="regions", lazy='dynamic')
+	games = db.relationship("Game", secondary=GameGenres, backref="franchises", lazy='dynamic')
 
-
+##GameRegions = db.Table('game_regions',
+##	db.Column('game_id', db.Integer, db.ForeignKey('games.id')),
+##	db.Column('region_id', db.Integer, db.ForeignKey('regions.id'))
+##)
+##class Region(db.Model):
+##	__tablename__ = 'regions'
+##	id = db.Column(db.Integer, primary_key=True)
+##	name = db.Column(db.String(255))
+##	abbreviation = db.Column(db.String(10))
+##	alt_names = db.Column(db.String(4000))
+##	games = db.relationship("Game", secondary=GameRegions, backref="regions", lazy='dynamic')
 
 GameDevelopers = db.Table('game_developers',
 	db.Column('game_id', db.Integer, db.ForeignKey('games.id')),
@@ -212,6 +218,18 @@ class Company(db.Model):
 	games_publisher = db.relationship("Game", secondary=GamePublishers, backref="publishers", lazy='dynamic')
 
 
+GamePlaylists = db.Table('game_playlists',
+	db.Column('game_id', db.Integer, db.ForeignKey('games.id')),
+	db.Column('playlist_id', db.Integer, db.ForeignKey('playlists.id'))
+)
+class Playlist(db.Model):
+	__tablename__ = 'playlists'
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String(100))
+	icon = db.Column(db.String(4000))
+	games = db.relationship("Game", secondary=GamePlaylists, backref="playlists", lazy='dynamic')
+
+
 class Filter(db.Model):
 	__tablename__ = 'filters'
 	id = db.Column(db.Integer, primary_key=True)
@@ -221,6 +239,9 @@ class Filter(db.Model):
 
 	def __repr__(self):
 		return '<Filter Name: %r> <%r>' % (self.name, self.filter_string)
+
+
+
 
 
 class Input(db.Model):

@@ -41,19 +41,19 @@
                     <div class="btn-group btn-group-xs" role="group" aria-label="Game Options" >
                         <button type="button" class="btn btn-warning btn_delete_game"><span class="glyphicon glyphicon-trash" ></span></button>
                         <button type="button" class="btn btn-default game_table_online_search-btn" ><span class="glyphicon glyphicon-cloud"></span></button>
-                        <a href='/platform/{{game.platform.id}}/game/{{game.id}}/edit' class="btn btn-default" ><span class="glyphicon glyphicon-pencil"> </span> </a>
+                        <a href='/Game/{{game.id}}/edit' class="btn btn-default" ><span class="glyphicon glyphicon-pencil"> </span> </a>
                     </div>
                 </td>
-                <td> <a href="/platform/{{game.platform.id}}"> {{game.platform.name}} </a> </td>
-                <td class="gameName">  <a href="/platform/{{game.platform.id}}/game/{{game.id}}"> {{game.name}} </a>  <a tabindex="0"  role="button" data-toggle="popover" title="Filename" data-content="{{ game.file_name }}"><img src="{{ url_for('static', filename='img/game_file.png') }}" </a></td>
+                <td> <a href="/Platform/{{game.platform.id}}"> {{game.platform.name}} </a> </td>
+                <td class="gameName">  <a href="/Game/{{game.id}}"> {{game.name}} </a>  <a tabindex="0"  role="button" data-toggle="popover" title="Filename" data-content="{{ game.file_name }}"><img src="{{ url_for('static', filename='img/game_file.png') }}" </a></td>
                 <td>
                     {% for region in game.regions %}
-                        <a href="/region/{{ region.id }}">{{ region.abbreviation }}</a>
+                        <a href="/Region/{{ region.id }}">{{ region.abbreviation }}</a>
                     {% endfor %}
                 </td>
                 <td>
                     {% for genre in game.genres %}
-                        <a href="/genre/{{ genre.id }}">{{ genre.name }}</a>
+                        <a href="/Genre/{{ genre.id }}">{{ genre.name }}</a>
                     {% endfor %}
                 </td>
                 <td width="30" style="text-align:center;">{% if game.active %} <span class="glyphicon glyphicon-ok"></span> {% else %}   {% endif %}</td>

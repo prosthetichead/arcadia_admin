@@ -8,6 +8,8 @@ import urllib2
 import random
 from werkzeug import utils
 from uuid import uuid4
+import platform
+import re
 
 
 scanner = None
@@ -64,7 +66,6 @@ def page_not_found(e):
 
 @app.route('/')
 @app.route('/index')
-@app.route('/platform')
 def home():
 	platforms = models.Platform.query.all()
 	games = models.Game.query.all()
@@ -75,23 +76,23 @@ def home():
 		rgame = db.session.query(models.Game)[rand]
 	else:
 		rgame = None
-	return render_template("index.html", platforms=platforms, games=games, filters=filters,  rgame=rgame, title="Home")
+	return render_template("index.html", platforms=platforms, games=games, filters=filters, rgame=rgame, title="Home")
 
 
-@app.route('/region')
-def regions_view_all():
-	regions = models.Region.query.all()
-	return render_template("region.html", title="All Regions", regions=regions)
+@app.route('/<type>')
+def attributes_view_all(type):
+	try:
+		dbModel = getattr(models, type)
+		items = dbModel.query.all()
+		return render_template("attributes.html", title="All " + type, items=items, type=type)
+	except Exception, e:
+		print e
+		return render_template('404.html'), 404
 
 
-@app.route('/genre')
-def genre_view_all():
-	genres = models.Genre.query.all()
-	return render_template("genres.html", title="All Genres", genres=genres)
 
-
-@app.route('/filter/new', defaults={'filter_id': None}, methods=['GET', 'POST'])
-@app.route('/filter/<filter_id>/edit', methods=['GET', 'POST'])
+@app.route('/Filter/new', defaults={'filter_id': None}, methods=['GET', 'POST'])
+@app.route('/Filter/<filter_id>', methods=['GET', 'POST'])
 def filter_edit_form(filter_id):
 	form = FilterForm()
 	filter_result = None
@@ -111,45 +112,19 @@ def filter_edit_form(filter_id):
 		db.session.add(filter)
 		db.session.commit()
 		db.session.refresh(filter)
-		return redirect('/filter/'+ str(filter.id) +'/edit')
+		return redirect('/Filter/'+ str(filter.id))
 	elif filter.icon is not None:
 		form.icon.data = filter.icon
 
 	return render_template('filter_edit.html',
-						   title='Filter Edit ' + str(filter.name),
+						   title='Filter ' + str(filter.name),
 						   filter=filter,
 						   filter_result=filter_result,
 						   form=form)
 
 
-@app.route('/region/new', defaults={'region_id': None}, methods=['GET', 'POST'])
-@app.route('/region/<region_id>/edit', methods=['GET', 'POST'])
-def region_edit_form(region_id):
-	form = RegionForm()
-
-	if region_id is not None:
-		region = models.Region.query.get_or_404(region_id)
-	else:
-		region = models.Region(name='')
-
-	if form.validate_on_submit():
-		region.name = form.name.data
-		region.abbreviation = form.abbreviation.data
-		region.alt_names = form.alt_names.data
-
-		db.session.add(region)
-		db.session.commit()
-
-		return redirect('/region')
-
-	return render_template('region_edit.html',
-						   title='Region Edit ' + str(region.name),
-						   region=region,
-						   form=form)
-
-
-@app.route('/genre/new', defaults={'genre_id': None}, methods=['GET', 'POST'])
-@app.route('/genre/<genre_id>/edit', methods=['GET', 'POST'])
+@app.route('/Genre/new', defaults={'genre_id': None}, methods=['GET', 'POST'])
+@app.route('/Genre/<genre_id>/edit', methods=['GET', 'POST'])
 def genre_edit_form(genre_id):
 	form = GenreForm()
 
@@ -173,8 +148,32 @@ def genre_edit_form(genre_id):
 						   form=form)
 
 
-@app.route('/platform/new', defaults={'platform_id': None}, methods=['GET', 'POST'])
-@app.route('/platform/<platform_id>/edit', methods=['GET', 'POST'])
+@app.route('/Game/<game_id>/edit', methods=('GET', 'POST'))
+def game_edit(game_id):
+	form = GameForm()
+
+	form.genres.choices = models.Genre.query.with_entities(models.Genre.id, models.Genre.name) \
+		.order_by(models.Genre.name.asc())
+
+	game = models.Game.query.get_or_404(game_id)
+	platform = game.platform
+
+	if form.validate_on_submit():
+		game.name = form.name.data
+		game.desc = form.desc.data
+		game.id_genres = form.genres.data
+		db.session.add(game)
+		db.session.commit()
+		return redirect("/Game/%s" % (game_id))
+	else:
+		form.genres.default = game.id_genres
+		form.process()
+
+	return render_template("game_edit.html", title="Game Edit", platform=platform, game=game, form=form)
+
+
+@app.route('/Platform/new', defaults={'platform_id': None}, methods=['GET', 'POST'])
+@app.route('/Platform/<platform_id>/edit', methods=['GET', 'POST'])
 def platform_edit_form(platform_id):
 	form = PlatformForm()
 
@@ -198,9 +197,8 @@ def platform_edit_form(platform_id):
 
 		db.session.add(platform)
 		db.session.commit()
-		#flash('platform "%s" updated' % (form.name.data))
 
-		return redirect('/platform')
+		return redirect('/')
 	elif platform.icon is not None:
 		form.icon.data = platform.icon
 
@@ -211,7 +209,15 @@ def platform_edit_form(platform_id):
 						   form=form)
 
 
-@app.route('/platform/<platform_id>')
+@app.route('/Game/<game_id>')
+def game_view(game_id):
+	game = models.Game.query.get_or_404(game_id)
+	platform = game.platform
+
+	return render_template("game.html", title="Game", platform=platform, game=game)
+
+
+@app.route('/Platform/<platform_id>')
 def platform_view(platform_id=1):
 	sort = request.args.get('sort', default='name')
 	order = request.args.get('order', default='asc')  # desc
@@ -221,45 +227,28 @@ def platform_view(platform_id=1):
 	platform = models.Platform.query.get_or_404(platform_id)
 
 	sort_order_by = get_order_by(sort, order)
-	games = models.Game.query.filter(models.Game.platform_id == platform_id). \
-		order_by(sort_order_by()).paginate(page, per_page, False)
+	games = platform.games.order_by(sort_order_by()).paginate(page, per_page, False)
 	page_title = platform.name
 	return render_template("platform.html", title=page_title, platform=platform, games=games)
 
 
-@app.route('/region/<region_id>')
-def region_view(region_id):
+@app.route('/<type>/<id>')
+def view_attribute(type, id):
 	sort = request.args.get('sort', default='name')
 	order = request.args.get('order', default='asc')  # desc
 	page = int(request.args.get('page', default=1))
 	per_page = int(request.args.get('per_page', default=100))
 
-	region = models.Region.query.get_or_404(region_id)
+	dbModel = getattr(models, type)
+	item = dbModel.query.get_or_404(id)
 
 	sort_order_by = get_order_by(sort, order)
-	games = models.Game.query.filter(models.Game.regions.any(id=region_id)). \
-		order_by(sort_order_by()).paginate(page, per_page, False)
-	page_title = region.name
-	return render_template("region.html", title=page_title, region=region, games=games)
+	games = item.games.order_by(sort_order_by()).paginate(page, per_page, False)
+	page_title = item.name
+	return render_template("view_attribute.html", type=type, title=page_title, item=item, games=games)
 
 
-@app.route('/genre/<genre_id>')
-def genre_view(genre_id):
-	sort = request.args.get('sort', default='name')
-	order = request.args.get('order', default='asc')  # desc
-	page = int(request.args.get('page', default=1))
-	per_page = int(request.args.get('per_page', default=100))
-
-	genre = models.Genre.query.get_or_404(genre_id)
-
-	sort_order_by = get_order_by(sort, order)
-	games = models.Game.query.filter(models.Game.genres.any(id=genre_id)). \
-		order_by(sort_order_by()).paginate(page, per_page, False)
-	page_title = genre.name
-	return render_template("genre.html", title=page_title, genre=genre, games=games)
-
-
-@app.route('/platform/<platform_id>/_load_game_list', methods=['GET', 'POST'])
+@app.route('/Platform/<platform_id>/_load_game_list', methods=['GET', 'POST'])
 def load_game_list(platform_id):
 	if request.method == 'POST':
 		f = request.files['file']
@@ -292,7 +281,7 @@ def load_game_list(platform_id):
 			return jsonify(status='ended')
 
 
-@app.route('/platform/<platform_id>/_upload_game_file', methods=['POST'])
+@app.route('/Platform/<platform_id>/_upload_game_file', methods=['POST'])
 def upload_game_file(platform_id):
 	"""Upload a game rom file to the platforms rom folder."""
 
@@ -321,37 +310,8 @@ def upload_game_file(platform_id):
 		return jsonify(result='ERROR', file_name=filename_noExtension, file_type=file_type, msg=str(e))
 
 
-@app.route('/platform/<platform_id>/game/<game_id>/edit', methods=('GET', 'POST'))
-@app.route('/platform/<platform_id>/game/new', defaults={'game_id': None}, methods=['GET', 'POST'])
-def game_edit(platform_id, game_id):
-	form = GameForm()
-
-	form.genres.choices = models.Genre.query.with_entities(models.Genre.id, models.Genre.name) \
-		.order_by(models.Genre.name.asc())
-
-	if game_id is not None:  # get existing platform data and fill in the boxes
-		game = models.Game.query.get_or_404(game_id)
-		platform = game.platform
-	else:
-		game = models.Platform(name='')
-		platform = models.Platform.query.get_or_404(platform_id)
-
-	if form.validate_on_submit():
-		game.name = form.name.data
-		game.desc = form.desc.data
-		game.id_genres = form.genres.data
-		db.session.add(game)
-		db.session.commit()
-		return redirect("/platform/%s/game/%s" % (platform_id, game_id))
-	else:
-		form.genres.default = game.id_genres
-		form.process()
-
-	return render_template("game_edit.html", title="Game Edit", platform=platform, game=game, form=form)
-
-
-@app.route('/platform/<platform_id>/game/<game_id>/img/<image_type>')
-def send_game_image(platform_id, game_id, image_type):
+@app.route('/Game/<game_id>/img/<image_type>')
+def send_game_image(game_id, image_type):
 	game = models.Game.query.get_or_404(game_id)
 	platform = game.platform
 
@@ -371,7 +331,7 @@ def send_game_image(platform_id, game_id, image_type):
 	return ""
 
 
-@app.route('/platform/<platform_id>/game/<game_id>/vid')
+@app.route('/Game/<game_id>/vid')
 def send_game_video(platform_id, game_id):
 	game = models.Game.query.get_or_404(game_id)
 	platform = game.platform
@@ -387,12 +347,7 @@ def send_game_video(platform_id, game_id):
 	return ""
 
 
-@app.route('/platform/<platform_id>/game/<game_id>')
-def game_view(platform_id, game_id):
-	game = models.Game.query.get_or_404(game_id)
-	platform = game.platform
 
-	return render_template("game.html", title="Game", platform=platform, game=game)
 
 
 @app.route('/_delete_games', methods=['GET'])
@@ -410,6 +365,19 @@ def delete_games():
 		return jsonify(result='OK')
 	except Exception, e:
 		return jsonify(result='ERROR', msg=e.message)
+
+
+@app.route('/_delete', methods=['GET'])
+def delete():
+	id = request.args.get('item_id', default=0)
+	type = request.args.get('type', default='')
+	try:
+		dbModel = getattr(models, type)
+		db.session.query(dbModel).filter(dbModel.id == id).delete(synchronize_session=False)
+		db.session.commit()
+		return jsonify(result='OK')
+	except Exception, e:
+		return jsonify(result='ERROR', msg=str(e))
 
 
 @app.route('/platform/<platform_id>/_rom_scan')
@@ -568,31 +536,25 @@ def update_image_from_online(game_id):
 def settings_inputs():
 	return render_template("settings_controls.html", title="Arcadia Controls")
 
+@app.route('/_file_browser')
+def file_browser():
+	path = request.args.get('path', default='')
+	print path
+	return_items = []
 
 
-@app.route('/filter/<filter_id>')
-def view_filter(filter_id):
-	platform_id = request.args.get('platform_id', default="all")
+	if platform.system() == 'Windows':
 
-	filter = models.Filter.query.get_or_404(filter_id)
-	if platform_id != "all":
-		platform_filter = "platforms.id = " + str(platform_id)
-	else:
-		platform_filter = "1=1"
+		if not os.path.isdir(path):
+			drives = re.findall(r"[A-Z]+:.*$", os.popen("mountvol /").read(), re.MULTILINE)
+			for drive in drives:
+				return_items.append({'file_name': drive, 'path': drive, 'type': 'dir'})
+		else:
+			for filename in os.listdir(path):
+				if os.path.isdir(os.path.join(path, filename)):
+					return_items.append({'file_name': filename, 'path': os.path.join(path, filename), 'type': 'dir'})
+			for filename in os.listdir(path):
+				if os.path.isfile(os.path.join(path, filename)):
+					return_items.append({'file_name': filename, 'path': os.path.join(path, filename), 'type': 'file'})
 
-	sql = """select distinct
-				games.name name, games.file_name, platforms.id platform_id, platforms.name platform_name, games.id id
-				from games
-				join platforms on games.platform_id = platforms.id
-				left join game_genres on games.id = game_genres.game_id
-				left join genres on game_genres.genre_id = genres.id
-				left join game_developers on games.id = game_developers.game_id
-				left join companies developers on game_developers.developer_id = developers .id
-				left join game_publishers on games.id = game_publishers.game_id
-				left join companies publishers on game_publishers.publisher_id = publishers.id
-				where games.active = 1
-				and ({0}) and ({1}) order by games.name """.format(platform_filter, filter.filter_string)
-
-	result = db.engine.execute(sql).fetchall()
-
-	return render_template("filter.html", filter_result=result)
+	return Response(json.dumps(return_items), mimetype='application/json')

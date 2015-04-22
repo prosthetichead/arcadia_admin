@@ -10,11 +10,17 @@
 </script>
 {% endblock %}
 
+{% block nav_left %}
+<ul class="nav navbar-nav">
+    <li><a href="{{item.id}}/edit">Edit {{type}}</a> </li>
+</ul>
+{% endblock %}
+
 {% block breadcrumb %}
      <ol class="breadcrumb ">
        <li><a href="/">Home</a></li>
-       <li><a href="/region">Region</a></li>
-       <li class="active">{{region.region_name}}</li>
+       <li><a href="/{{type}}"> {{type}} </a></li>
+       <li class="active">{{item.name}}</li>
      </ol>
 {% endblock %}
 

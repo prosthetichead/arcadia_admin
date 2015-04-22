@@ -4,9 +4,9 @@
 {% block breadcrumb %}
      <ol class="breadcrumb ">
          <li><a href="/">Home</a></li>
-         <li><a href="/platform">Platform</a></li>
-         <li><a href="/platform/{{platform.id}}">{{platform.name}}</a></li>
-         <li><a href="/platform/{{platform.id}}/game/{{game.id}}">{{game.name}}</a></li>
+         <li><a href="/Platform">Platform</a></li>
+         <li><a href="/Platform/{{platform.id}}">{{platform.name}}</a></li>
+         <li><a href="/Game/{{game.id}}">{{game.name}}</a></li>
          <li class="active">Edit Game</li>
      </ol>
 {% endblock %}
@@ -52,7 +52,7 @@
 
       <div class="form-group">
         <div class="col-sm-offset-3 col-sm-5" style="text-align:right;">
-            <input type="submit" name="btn" value="Save" class="btn btn-primary "> <a href='/platform' class="btn btn-danger">Cancel</a>
+            <input type="submit" name="btn" value="Save" class="btn btn-primary "> <a href='/Game/{{game.id}}' class="btn btn-danger">Cancel</a>
         </div>
       </div>
 

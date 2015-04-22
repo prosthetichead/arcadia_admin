@@ -71,6 +71,20 @@ function setGetParameter_andGo(paramName, paramValue, url_to_change)
 }
 
 
+function delete_item(type, item_id) {
+    if (confirm("Delete?")) {
+        $.getJSON("/_delete?type=" + type + "&item_id=" + item_id, function(data){
+            if (data.result == "ERROR"){
+                alert(data.result + " " + data.msg);
+            }
+            else {
+                window.location.href = '/';
+            }
+        });
+    }
+}
+
+
 function open_image_asset_modal(type) {
     $('#assets_image-list').empty();
     $.getJSON("/_assets/" + type ,function(data){
@@ -212,4 +226,40 @@ $(document).on("click", ".asset_image-img",function() {
                 window.location.reload(true);
             }
         });
+    });
+
+
+    function file_browser(path, textBoxToUpdate) {
+        $("#file_browser-current_path").val(path)
+
+        $('#file_browser-dialog').modal('show');
+
+        file_browser_update_list(path);
+
+        $("#file_browser-selected").click(function() {
+            textBoxToUpdate.val($("#file_browser-current_path").val());
+            $('#file_browser-dialog').modal('hide');
+        });
+    }
+
+    $("#file_browser-change_path").click(function() {
+       file_browser_update_list( $("#file_browser-current_path").val() );
+    });
+
+    function file_browser_update_list(path) {
+        $("#file_browser-current_path").val(path);
+        $("#file_browser-list").empty();
+        $.getJSON("/_file_browser?path=" + path , function(data){
+             $.each(data, function(i, record) {
+                if (record.type == 'dir'){
+                    $('#file_browser-list').append('<li class="file_browser_link_' + record.type + '" id="' + record.path + '" > <span class="glyphicon glyphicon-folder-open" aria-hidden="true"> </span> &nbsp;&nbsp;' +  record.file_name + '</li>');
+                }
+                else {
+                    $('#file_browser-list').append('<li class="file_browser_link_' + record.type + '" id="' + record.path + '" > <span class="glyphicon glyphicon-file" aria-hidden="true"> </span> &nbsp;&nbsp;' +  record.file_name + '</li>');
+                }
+             });
+        });
+    }
+    $("#file_browser-list").on("click", ".file_browser_link_dir", function(event){
+        file_browser_update_list( $(this).attr('id')  );
     });

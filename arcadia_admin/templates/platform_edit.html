@@ -1,6 +1,13 @@
 <!-- extend from base layout -->
 {% extends "base.html" %}
 
+
+{% block nav_left %}
+<ul class="nav navbar-nav">
+    <li><a onclick="delete_item('Platform', '{{platform.id}}')" href="javascript:void(0);"> Delete Platform </a> </li>
+</ul>
+{% endblock %}
+
 {% block breadcrumb %}
      <ol class="breadcrumb ">
          <li><a href="/">Home</a></li>
@@ -23,30 +30,24 @@
         </div>
 
            <div class="col-sm-4"> <h3>Platform {{ platform.name }} </h3> </div>
-            <div class="col-sm-4">
-                            <div class="checkbox">
-
-{% set f = form.active.process_data( platform.active ) %} {{ form.active() }} Platform Active
-
-            </div> </div>
+                <div class="col-sm-4">
+                    <div class="checkbox">
+                        {% set f = form.active.process_data( platform.active ) %} {{ form.active() }} Platform Active
+                    </div>
+                </div>
         </div>
 
         <div class="row">
 
-        </div>
-
-        <div class="col-sm-1">
-
-        </div>
 
 
         <div class="form-group">
-            <div class="col-sm-5">
+            <div class="col-sm-6">
                 <label for="name" class="control-label">Platform Name</label>
                 {% set f = form.name.process_data( platform.name ) %}
                 {{ form.name(size=80, maxlength=255, class_='form-control' ) }}
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <label for="alias" class="control-label">Alias</label>
                 {% set f = form.alias.process_data( platform.alias ) %} {{ form.alias(class_='form-control') }}
             </div>
@@ -54,46 +55,75 @@
 
         <div class="form-group">
             <div class="col-sm-8">
-                <label for="desc" class=" control-label">Description</label>
+                <label for="desc" class="control-label">Description</label>
                 {% set f = form.desc.process_data( platform.desc ) %} {{ form.desc(cols="80", rows="5", class_='form-control' ) }}
             </div>
         </div>
 
 
       <div class="form-group">
-          <label for="rom_extension" class="col-sm-3 control-label">Rom File Extension</label>
           <div class="col-sm-5">
+              <label for="roms_path" class="control-label">Roms Path</label>
+              <div class="input-group">
+              {% set f = form.roms_path.process_data( platform.roms_path ) %}{{ form.roms_path(class_='form-control') }}
+               <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary file_browser">Browse</button>
+                </span>
+              </div>
+          </div>
+
+          <div class="col-sm-2">
+              <label for="rom_extension" class="control-label">Rom File Extension</label>
               {% set f = form.rom_extension.process_data( platform.extension ) %}{{ form.rom_extension(class_='form-control') }}
+
+          </div>
+      </div>
+
+
+      <div class="form-group">
+          <div class="col-sm-5">
+          <label for="emu_path" class="control-label">Emulator Path</label>
+              <div class="input-group">
+                {% set f = form.emu_path.process_data( platform.emu_path ) %}{{ form.emu_path(class_='form-control') }}
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary file_browser">Browse</button>
+                  </span>
+              </div>
+          </div>
+      </div>
+
+      <div class="form-group">
+          <div class="col-sm-5">
+              <label for="load_string" class="control-label">Load String</label>
+              <div class="input-group">
+                {% set f = form.load_string.process_data( platform.load_string ) %}{{ form.load_string(class_='form-control') }}
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary file_browser">Browse</button>
+                </span>
+              </div>
+          </div>
+      </div>
+
+      <div class="form-group">
+          <div class="col-sm-5">
+          <label for="videos_path" class="control-label">Videos Path</label>
+              <div class="input-group">
+                {% set f = form.videos_path.process_data( platform.videos_path ) %}{{ form.videos_path(class_='form-control') }}
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary file_browser">Browse</button>
+                </span>
+              </div>
           </div>
       </div>
       <div class="form-group">
-          <label for="emu_path" class="col-sm-3 control-label">Emulator Path</label>
           <div class="col-sm-5">
-            {% set f = form.emu_path.process_data( platform.emu_path ) %}{{ form.emu_path(class_='form-control') }}
-          </div>
-      </div>
-      <div class="form-group">
-          <label for="roms_path" class="col-sm-3 control-label">Roms Path</label>
-          <div class="col-sm-5">
-            {% set f = form.roms_path.process_data( platform.roms_path ) %}{{ form.roms_path(class_='form-control') }}
-          </div>
-      </div>
-      <div class="form-group">
-          <label for="load_string" class="col-sm-3 control-label">Load String</label>
-          <div class="col-sm-5">
-            {% set f = form.load_string.process_data( platform.load_string ) %}{{ form.load_string(class_='form-control') }}
-          </div>
-      </div>
-      <div class="form-group">
-          <label for="videos_path" class="col-sm-3 control-label">Videos Path</label>
-          <div class="col-sm-5">
-            {% set f = form.videos_path.process_data( platform.videos_path ) %}{{ form.videos_path(class_='form-control') }}
-          </div>
-      </div>
-      <div class="form-group">
-          <label for="images_path" class="col-sm-3 control-label">Images Path</label>
-          <div class="col-sm-5">
+          <label for="images_path" class="control-label">Images Path</label>
+              <div class="input-group">
             {% set f = form.images_path.process_data( platform.images_path ) %}{{ form.images_path(class_='form-control') }}
+                              <span class="input-group-btn">
+                    <button type="button" class="btn btn-primary file_browser">Browse</button>
+                </span>
+              </div>
           </div>
       </div>
 
@@ -127,6 +157,14 @@
 
 {% block scripts %}
 <script>
+
+
+$(".file_browser").click(function() {
+    var textBox = $(this).parent().siblings("input");
+    var path = textBox.val();
+    file_browser(path, textBox);
+});
+
 
 $(document).ready(function() {
     console.log('<img id="icon_img" src="/_assets/icons/' + $('#icon').val() + '"/>');
